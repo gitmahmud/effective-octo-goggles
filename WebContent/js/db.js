@@ -21,11 +21,11 @@ DB.load = function() {
 
 	// Items
 	alasql('DROP TABLE IF EXISTS item;');
-	alasql('CREATE TABLE item(id INT IDENTITY, code STRING, kind INT, detail STRING, maker STRING, price INT, unit STRING);');
+	alasql('CREATE TABLE item(id INT IDENTITY, code STRING, kind INT, detail STRING, maker STRING, price INT, unit STRING, pclass STRING);');
 	var pitem = alasql.promise('SELECT MATRIX * FROM CSV("data/ITEM-ITEM.csv", {headers: true})').then(function(items) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			alasql('INSERT INTO item VALUES(?,?,?,?,?,?,?);', item);
+			alasql('INSERT INTO item VALUES(?,?,?,?,?,?,?,?);', item);
 		}
 	});
 
@@ -42,12 +42,12 @@ DB.load = function() {
 
 	// Inventories
 	alasql('DROP TABLE IF EXISTS stock;');
-	alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT);');
+	alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, obsoleteperiod INT, maxusage INT, leadtime INT, avgdailyusage INT, maxleadtime INT, reorderstatus INT);');
 	var pstock = alasql.promise('SELECT MATRIX * FROM CSV("data/STOCK-STOCK.csv", {headers: true})').then(
 			function(stocks) {
 				for (var i = 0; i < stocks.length; i++) {
 					var stock = stocks[i];
-					alasql('INSERT INTO stock VALUES(?,?,?,?);', stock);
+					alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?);', stock);
 				}
 			});
 
@@ -62,8 +62,50 @@ DB.load = function() {
 				}
 			});
 
-	// Reload page
-	Promise.all([ pkind, pitem, pwhouse, pstock, ptrans ]).then(function() {
+
+	alasql('DROP TABLE IF EXISTS forecast;');
+    alasql('CREATE TABLE forecast(id INT IDENTITY, stockid INT, times DATE, type STRING, quantity INT);');
+
+    var pforecast = alasql.promise('SELECT MATRIX * FROM CSV("data/FORECAST-FORECAST.csv", {headers: true})').then(
+        function(forecasts) {
+            for (var i = 0; i < forecasts.length; i++) {
+                var forecast = forecasts[i];
+                alasql('INSERT INTO forecast VALUES(?,?,?,?,?);', forecast);
+            }
+        });
+
+    alasql('DROP TABLE IF EXISTS supplier;');
+    alasql('CREATE TABLE supplier(id INT IDENTITY, whouseid INT, name STRING);');
+
+    var psupplier = alasql.promise('SELECT MATRIX * FROM CSV("data/SUPPLIER-SUPPLIER.csv", {headers: true})').then(
+        function(suppliers) {
+            for (var i = 0; i < suppliers.length; i++) {
+                var supplier = suppliers[i];
+                alasql('INSERT INTO supplier VALUES(?,?,?);', supplier);
+            }
+        });
+
+
+    alasql('DROP TABLE IF EXISTS supplierrating;');
+    alasql('CREATE TABLE supplierrating(id INT IDENTITY, supplierid INT, rating INT);');
+
+    var psupplierrating = alasql.promise('SELECT MATRIX * FROM CSV("data/SUPPLIERRATING-SUPPLIERRATING.csv", {headers: true})').then(
+        function(supplierratings) {
+            for (var i = 0; i < supplierratings.length; i++) {
+                var supplierrating = supplierratings[i];
+                alasql('INSERT INTO supplierrating VALUES(?,?,?);', supplierrating);
+            }
+        });
+
+
+
+
+
+
+
+
+    // Reload page
+	Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, pforecast, psupplier, psupplierrating ]).then(function() {
 		window.location.reload(true);
 	});
 };

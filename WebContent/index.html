@@ -3,6 +3,7 @@
 <head>
 <script src="lib/jquery.js"></script>
 <link href="css/bootstrap.css" rel="stylesheet" />
+<link href="css/bootstrap.css.map" rel="stylesheet" />
 <script src="lib/bootstrap.js"></script>
 <script src="lib/alasql.js"></script>
 <script src="lib/purl.js"></script>
@@ -35,6 +36,7 @@
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="index.html">Inventory Management</a></li>
+					<li id="reorderId" ><a href="reorder.html" >Reorder  <span class="badge">2</span> </a> </li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
@@ -58,7 +60,7 @@
 
 	<div class="container">
 		<form action="index.html" class="form-inline text-center">
-			<div class="form-group">
+			<div class="form-group" style="display: none">
 				<label>Warehouse</label> <select name="q1" class="form-control">
 					<option value="0">All</option>
 				</select>
@@ -83,7 +85,7 @@
 				class="glyphicon glyphicon-plus"></span> New</a>
 		</div>
 
-		<table class="table table-hover table-condensed">
+		<table class="table table-hover table-condensed table-bordered table-striped">
 			<thead>
 				<tr>
 					<th>Warehouse</th>
@@ -99,65 +101,65 @@
 			<tbody id="tbody-stocks"></tbody>
 		</table>
 	</div>
-	<div id="chart_container" style="width: 50%;margin-left: 25%"></div>
+	<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
 	<script src="js/index.js"></script>
 	<script>
 
 
-        Highcharts.chart('chart_container', {
-
-            title: {
-                text: 'Solar Employment Growth by Sector, 2010-2016'
-            },
-
-            subtitle: {
-                text: 'Source: thesolarfoundation.com'
-            },
-			xAxis:{
-                type: 'datetime'
-			},
-
-            yAxis: {
-                title: {
-                    text: 'Number of Employees'
-                }
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle'
-            },
-
-//            plotOptions: {
-//                series: {
-//                    //pointStart: 2010
-//                    //type: 'datetime',
-//                    categories: ['2017-02-10', '2017-02-11', '2017-02-12',
-//                        '2017-02-13','2017-02-14' , '2017-02-15' ,
-//                        '2017-02-16' , '2017-02-17'
-//                    ]
+//        Highcharts.chart('chart_container', {
+//
+//            title: {
+//                text: 'Solar Employment Growth by Sector, 2010-2016'
+//            },
+//
+//            subtitle: {
+//                text: 'Source: thesolarfoundation.com'
+//            },
+//			xAxis:{
+//                type: 'datetime'
+//			},
+//
+//            yAxis: {
+//                title: {
+//                    text: 'Number of Employees'
 //                }
 //            },
-
-            series: [{
-                name: 'Installation',
-                data: [[Date.UTC(2012, 01, 01), 43934], [Date.UTC(2012, 01, 02), 52503],
-                    [Date.UTC(2012, 01, 03), 57177], [Date.UTC(2012, 01, 07), 69658]
-                ]
-            },{
-                name: 'Deployment',
-				data : [
-				    [Date.UTC(2012,01,01) ,33934],
-					[Date.UTC(2012,01,04) ,57177 ],
-					[Date.UTC(2012,01,08) ,87177 ]
-
-
-				]
-
-			}
-            ]
-
-        });
+//            legend: {
+//                layout: 'vertical',
+//                align: 'right',
+//                verticalAlign: 'middle'
+//            },
+//
+////            plotOptions: {
+////                series: {
+////                    //pointStart: 2010
+////                    //type: 'datetime',
+////                    categories: ['2017-02-10', '2017-02-11', '2017-02-12',
+////                        '2017-02-13','2017-02-14' , '2017-02-15' ,
+////                        '2017-02-16' , '2017-02-17'
+////                    ]
+////                }
+////            },
+//
+//            series: [{
+//                name: 'Installation',
+//                data: [[Date.UTC(2012, 01, 01), 43934], [Date.UTC(2012, 01, 02), 52503],
+//                    [Date.UTC(2012, 01, 03), 57177], [Date.UTC(2012, 01, 07), 69658]
+//                ]
+//            },{
+//                name: 'Deployment',
+//				data : [
+//				    [Date.UTC(2012,01,01) ,33934],
+//					[Date.UTC(2012,01,04) ,57177 ],
+//					[Date.UTC(2012,01,08) ,87177 ]
+//
+//
+//				]
+//
+//			}
+//            ]
+//
+//        });
 
 	</script>
 </body>

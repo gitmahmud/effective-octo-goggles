@@ -2,7 +2,8 @@
 <html>
 <head>
     <script src="lib/jquery.js"></script>
-    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <!--<link href="css/bootstrap.css.map" rel="stylesheet"/>-->
     <script src="lib/bootstrap.js"></script>
     <script src="lib/alasql.js"></script>
     <script src="lib/purl.js"></script>
@@ -27,7 +28,7 @@
             <a class="navbar-brand">COMPANY</a>
         </div>
         <h1 style="margin-left: 20%" class="text-primary nav navbar-nav">
-            Customer order form
+            Salesperson order form
         </h1>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -39,14 +40,16 @@
                     Notification <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a onclick="window.location.reload(true);"><span
-                                class="glyphicon glyphicon-info-sign"></span> Your order #011 has been taken as back-order.</a></li>
+                                class="glyphicon glyphicon-info-sign"></span> Your order #011 has been taken as
+                            back-order.</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a onclick="DB.init();"><span
                                 class="glyphicon glyphicon-repeat"></span> Init DB</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a onclick="DB.remove();"><span
                                 class="glyphicon glyphicon-trash"></span> Delete DB</a></li>
-                    </ul></li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -56,13 +59,15 @@
 
 <div class="container" style="margin-left: 15%;margin-right: 15%">
     <table class="table table-bordered table-striped">
+        <tbody id="customer_tbody">
+
+        </tbody>
 
     </table>
 
 
-
-
 </div>
-<script src="js/stock.js"></script>
+<script src="js/customer.js"></script>
 </body>
+
 </html>

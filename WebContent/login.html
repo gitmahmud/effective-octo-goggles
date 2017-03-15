@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
+
+
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="panel panel-primary" style="margin-left: 20%;margin-right: 50%">
+
+    <div class="panel-heading">Login</div>
+    <div class="panel-body">
+        <div class="input-group input-group-lg" >
+            <form>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd">
+                </div>
+                <button id="btnLogin" class="btn btn-primary" style="margin-top: 20px">Log In</button>
+            </form>
+
+    </div>
+
+
+</div>
+
+<script>
+    $('#btnLogin').on('click', function () {
+        let whouse = $('#pwd').val();
+        window.location.replace('index.html?inv=' + whouse);
+
+    });
+
+
+</script>
+</body>
+</html>

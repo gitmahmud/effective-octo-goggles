@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <!--<link href="css/bootstrap.css.map" rel="stylesheet"/>-->
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="js/db.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+
+
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container" style="margin-left: 10%; margin-right: 10%">
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">New reorder</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <th>Code</th>
+                <th>Maker</th>
+                <th>Detail</th>
+                <th>In stock<div>
+                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </div></th>
+                <th>Product Class<div>
+                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </div></th>
+                <th>Reorder</th>
+
+
+                </thead>
+                <tbody id="tbody_new_reorder">
+                <tr>
+
+
+                </tr>
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+<script src="js/reorder.js"></script>
+</body>
+
+</html>
