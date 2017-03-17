@@ -98,8 +98,10 @@ DB.load = function() {
         });
 
 
-
-
+    alasql('DROP TABLE IF EXISTS reorderproduct;');
+    alasql('CREATE TABLE reorderproduct(id INT IDENTITY, stockid INT, supplierid INT, status STRING, orderquantity INT,' +
+		' orderplaceddate DATE, orderreceiveddate DATE, expectedreceivedate DATE, orderreceivequantity INT, ' +
+		'receivequantitygood INT, receivequantitydamaged INT);');
 
 
 

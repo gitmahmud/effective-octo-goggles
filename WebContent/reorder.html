@@ -43,18 +43,22 @@
                 <th>Code</th>
                 <th>Maker</th>
                 <th>Detail</th>
-                <th>In stock<div>
-                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_desc"><span
-                            class="glyphicon glyphicon-chevron-down"></span></button>
-                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_asc"><span
-                            class="glyphicon glyphicon-chevron-up"></span></button>
-                </div></th>
-                <th>Product Class<div>
-                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_desc"><span
-                            class="glyphicon glyphicon-chevron-down"></span></button>
-                    <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_asc"><span
-                            class="glyphicon glyphicon-chevron-up"></span></button>
-                </div></th>
+                <th>In stock
+                    <div>
+                        <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_desc"><span
+                                class="glyphicon glyphicon-chevron-down"></span></button>
+                        <button class="btn btn-xs btn-info" id="id_new_reorder_list_stock_quantity_asc"><span
+                                class="glyphicon glyphicon-chevron-up"></span></button>
+                    </div>
+                </th>
+                <th>Product Class
+                    <div>
+                        <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_desc"><span
+                                class="glyphicon glyphicon-chevron-down"></span></button>
+                        <button class="btn btn-xs btn-info" id="id_new_reorder_list_pclass_asc"><span
+                                class="glyphicon glyphicon-chevron-up"></span></button>
+                    </div>
+                </th>
                 <th>Reorder</th>
 
 
@@ -69,6 +73,317 @@
                 </tbody>
             </table>
 
+
+        </div>
+
+
+    </div>
+
+    <div class="panel panel-success">
+        <!-- Default panel contents -->
+        <div class="panel-heading">In-progress reorder</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <th>#</th>
+                <th>Name</th>
+                <th>Detail</th>
+                <th>Order quantity
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_quantity_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_quantity_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Supplier
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_supplier_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_supplier_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Order Place Date
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_place_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_place_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Expected Order Receive Date
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_receive_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_receive_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Order Status
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_status_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_status_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+
+                </thead>
+                <tbody id="tbody_existing_reorder">
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+    <div id="modalSelectDate" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Product arrival date</h4>
+                </div>
+                <div class="modal-body" id="datepicker_modal">
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default text-center " onclick="productArrived()">Done
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div id="modalProductScrutinize" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Product condition</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody id="tbody_product_scruniti">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default text-center " onclick="checkReceiveProduct()">Check
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div id="modalOrderReport" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Order report</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <th>Order ID :#</th>
+                            <td id="report_order_id"></td>
+
+                        </tr>
+                        <tr>
+                            <th>Product Name :</th>
+                            <td id="report_product_name"></td>
+                        </tr>
+                        <tr>
+                            <th>Order Date :</th>
+                            <td id="report_order_date"></td>
+                        </tr>
+                        <tr>
+                            <th>Expected arrival date :</th>
+                            <td id="report_expected_arrival"></td>
+                        </tr>
+                        <tr>
+                            <th>Arrival date :</th>
+                            <td id="report_arrival_date"></td>
+                        </tr>
+                        <tr>
+                            <th>Product arrival status :</th>
+                            <td id="report_arrival_status"></td>
+                        </tr>
+                        <tr>
+                            <th>Order quantity :</th>
+                            <td id="report_order_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Total received quantity :</th>
+                            <td id="report_total_receive_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Received quantity(Good) :</th>
+                            <td id="report_good_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Received quantity(Damaged) :</th>
+                            <td id="report_damaged_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>% Good products :</th>
+                            <td id="report_percent_good"></td>
+                        </tr>
+                        <tr>
+                            <th>% Damaged products :</th>
+                            <td id="report_percent_damaged"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Supplier :</th>
+                            <td id="report_supplier"></td>
+                        </tr>
+
+                        <!--<tr>-->
+                            <!--<th>Rate Supplier :</th>-->
+                            <!--<td><input name="supplier_rate" type="radio" value="1"-->
+                                       <!--style="margin-right: 10px;margin-left: 20px">1-->
+                                <!--<input name="supplier_rate" type="radio" value="2"-->
+                                       <!--style="margin-right: 10px;margin-left: 20px">2-->
+                                <!--<input name="supplier_rate" type="radio" value="3"-->
+                                       <!--style="margin-right: 10px;margin-left: 20px">3-->
+                                <!--<input name="supplier_rate" type="radio" value="4"-->
+                                       <!--style="margin-right: 10px;margin-left: 20px">4-->
+                                <!--<input name="supplier_rate" type="radio" value="5"-->
+                                       <!--style="margin-right: 10px;margin-left: 20px">5-->
+                            <!--</td>-->
+                        <!--</tr>-->
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-danger text-center " style="float: left"
+                            id="report_return_product_button" onclick="returnProductToSupplier()">Return Order
+                    </button>
+
+                    <button type="button" class="btn btn-warning text-center " style="margin-left: 10%"
+                            id="report_return_product_damagaed_button" onclick="">Return Damaged Goods
+                    </button>
+                    <button type="button" class="btn btn-success text-center " style="float: right"
+                            id="report_add_to_inventory_button" onclick="">Add to inventory
+                    </button>
+                    <div class="clearfix"></div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div id="modalProductReturnForm" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Product return form</h4>
+                </div>
+                <div class="modal-body">
+                    <!--<b>Return type: </b>-->
+                    <!--<input  name="input_return_type_radio" type="radio" value="damage_return" style="margin-left: 30px;margin-right: 20px">Return damaged-->
+                    <!--<input name="input_return_type_radio" type="radio" value="all_return" style="margin-left: 20px;">Return All-->
+                    <table class="table ">
+                        <tbody>
+                        <tr>
+                            <th>Order ID :#</th>
+                            <td id="product_return_order_id"></td>
+
+                        </tr>
+                        <tr>
+                            <th>Product Name :</th>
+                            <td id="product_return_product_name"></td>
+                        </tr>
+                        <tr>
+                            <th>Expected arrival date :</th>
+                            <td id="product_return_expected_arrival"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Arrival date :</th>
+                            <td id="product_return_arrival_date"></td>
+                        </tr>
+                        <tr>
+                            <th>Order quantity :</th>
+                            <td id="product_return_order_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Received quantity :</th>
+                            <td id="product_return_received_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Damaged quantity (if any) :</th>
+                            <td id="product_return_damaged_quantity"></td>
+                        </tr>
+                        <tr>
+                            <th>Reason for return :</th>
+                            <td><textarea  class="form-control" rows="6"  id="product_return_reason" ></textarea></td>
+                        </tr>
+                        <!--<tr>-->
+                            <!--<th>Attached images :</th>-->
+                            <!--<td><input type="image" id="product_return_image"></td>-->
+                        <!--</tr>-->
+                        <tr>
+                            <th>Opened Status :</th>
+                            <td><select class="form-control" style="width: 130px;" id="product_return_open_status">
+                                <option>Unopened</option>
+                                <option>Opened</option>
+                            </select></td>
+                        </tr>
+                        <tr>
+                            <th>Products to be returned : </th>
+                            <td id="product_return_returning_quantity"></td>
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+
+
+                    <button type="button" class="btn btn-success text-center " id="product_return_form_button" onclick="productReturnFormCompleted()">Done</button>
+
+
+                </div>
+            </div>
 
         </div>
 
