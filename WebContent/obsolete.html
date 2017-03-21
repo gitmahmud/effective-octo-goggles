@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <!--<link href="css/bootstrap.css.map" rel="stylesheet"/>-->
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+
+
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container" style="margin-left: 10%; margin-right: 10%">
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">New Obsolete Inventories</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <th>Name</th>
+                <th>Maker</th>
+                <th>Detail</th>
+                <th>Last Sold
+                    <div>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_last_sold_desc"><span
+                                class="glyphicon glyphicon-chevron-down"></span></button>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_last_sold_asc"><span
+                                class="glyphicon glyphicon-chevron-up"></span></button>
+                    </div>
+                </th>
+                <th>Remaining quantity
+                    <div>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_remaining_desc"><span
+                                class="glyphicon glyphicon-chevron-down"></span></button>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_remaining_asc"><span
+                                class="glyphicon glyphicon-chevron-up"></span></button>
+                    </div>
+                </th>
+                <th>Price
+                    <div>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_price_desc"><span
+                                class="glyphicon glyphicon-chevron-down"></span></button>
+                        <button class="btn btn-xs btn-info" id="id_new_obsolete_list_price_asc"><span
+                                class="glyphicon glyphicon-chevron-up"></span></button>
+                    </div>
+                </th>
+                <th>Report</th>
+
+
+                </thead>
+                <tbody id="tbody_new_obsolete">
+                <tr>
+
+
+                </tr>
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="panel panel-success">
+        <!-- Default panel contents -->
+        <div class="panel-heading">In-progress reorder</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <th>#</th>
+                <th>Name</th>
+                <th>Detail</th>
+                <th>Order quantity
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_quantity_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_quantity_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Supplier
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_supplier_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_supplier_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Order Place Date
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_place_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_place_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Expected Order Receive Date
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_receive_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_receive_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+                <th>Order Status
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_status_desc"><span
+                            class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-info" id="id_existing_reorder_list_order_status_asc"><span
+                            class="glyphicon glyphicon-chevron-up"></span></button>
+                </th>
+
+                </thead>
+                <tbody id="tbody_existing_reorder">
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+    <div id="modalObsoleteReport" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Product Obsolete Report</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div style="float: left;width: 50%">
+                            <table class="table table-striped">
+                                <tbody id="tbody_obsolete_report">
+                                <tr>
+                                    <th>Stock ID</th>
+                                    <td id="obsolete_report_stock_id"></td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td id="obsolete_report_name"></td>
+                                </tr>
+                                <tr>
+                                    <th>Maker</th>
+                                    <td id="obsolete_report_maker"></td>
+                                </tr>
+                                <tr>
+                                    <th>Detail</th>
+                                    <td id="obsolete_report_detail"></td>
+                                </tr>
+                                <tr>
+                                    <th>Obsolete period</th>
+                                    <td id="obsolete_report_period"></td>
+                                </tr>
+                                <tr class="bg-warning">
+                                    <th>Last Sold</th>
+                                    <td id="obsolete_report_last_sold"></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-warning">Last buy</th>
+                                    <td class="bg-warning" id="obsolete_report_last_buy"></td>
+                                </tr>
+                                <tr>
+                                    <th>Price</th>
+                                    <td id="obsolete_report_price"></td>
+                                </tr>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <td id="obsolete_report_quantity"></td>
+                                </tr>
+                                <tr>
+                                    <th>Product Class</th>
+                                    <td id="obsolete_report_pclass"></td>
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div style="float: right;width: 40%">
+                            <img id="obsolete_report_img" src="">
+
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div id="productTransactionHistory">
+
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="button_remind_later" style="float: left" type="button" class="btn btn-default">Remind me later</button>
+                    <button id="button_obsolete_report_return_supplier" style="float: left;display: none" type="button" class="btn btn-danger">Return to Supplier</button>
+
+                    <button id="button_mark_obsolete" style="float: right;" type="button" class="btn btn-primary text-center "
+                            onclick="productMarkedAsObsolete()">Mark as obsolete
+                    </button>
+
+                    <button id="button_obsolete_report_create_promotion" style="float: right;display: none" type="button" class="btn btn-success text-center "
+                            onclick="loadCreatePromotion()">Create promotion
+                    </button>
+                    <span class="clearfix"></span>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div id="modalObsoleteProductCount" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" style="min-width: 666px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Obsolete product count</h4>
+                </div>
+                <div class="modal-body">
+                    <h3 class="bg-info ">Enter product count for the following product</h3>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Stock ID</th>
+                            <td id="obsolete_count_stock_id"></td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td id="obsolete_count_name"></td>
+                        </tr>
+                        <tr>
+                            <th>Maker</th>
+                            <td id="obsolete_count_maker"></td>
+                        </tr>
+                        <tr>
+                            <th>Detail</th>
+                            <td id="obsolete_count_detail"></td>
+                        </tr>
+                        <tr>
+                            <th>Good Inventory</th>
+                            <td><input style="width: 120px" class="form-control " id="obsolete_count_good_qty"
+                                       type="number"></td>
+                        </tr>
+                        <tr>
+                            <th>Damaged Inventory</th>
+                            <td>
+                                <form class="form-inline">
+
+                                    <input style="width: 120px" class="form-control" type="number"
+                                           id="obsolete_count_damaged_qty" value="0">
+
+                                    <button type="button" class="btn  btn-primary" id="add_garage_sale_button"
+                                            style="display: none" >Add to garage sale
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <span id="damage_garage_sale" style="margin-left: 20px"></span>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn  text-center "
+                            onclick="productCountDone()">Done
+                    </button>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+<script src="js/obsolete.js"></script>
+</body>
+
+</html>

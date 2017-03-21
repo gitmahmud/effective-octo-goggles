@@ -201,6 +201,7 @@ function plotDemandForecastChart(startDate, endDate) {
         },
         xAxis: {
             type: 'datetime',
+            tickInterval : 24*3600*1000,
             labels: {
                 // rotation: -45,
                 style: {

@@ -243,7 +243,7 @@ function productStatusChange() {
 
     }
     else if (statusOption.indexOf(changedStatus) === 2) {
-        let str = '<h1>Product arrival date </h1>';
+        let str = '<label class="label label-default" for="#id_product_arrival_date">Product arrival date </label>';
         str += '<input type="date" id="id_product_arrival_date" >';
         str += '<span style="display: none" id="modal_product_reorder_id">' + reorderId + '</span>'
 

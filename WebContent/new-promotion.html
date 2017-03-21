@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <!--<link href="css/bootstrap.css.map" rel="stylesheet"/>-->
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+
+
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container" style="margin-left: 10%; margin-right: 10%">
+    <div>
+        <table class="table">
+            <tr>
+                <th>Stock ID</th>
+                <td id="new_promotion_stock_id"></td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td id="new_promotion_name"></td>
+            </tr>
+            <tr>
+                <th>Maker</th>
+                <td id="new_promotion_maker"></td>
+            </tr>
+            <tr>
+                <th>Detail</th>
+                <td id="new_promotion_detail"></td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td id="new_promotion_price"></td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td id="new_promotion_quantity"></td>
+            </tr>
+            <tr>
+                <th>Product Class</th>
+                <td id="new_promotion_pclass"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+    <div class="form-group-lg form-inline" style="margin-left: 30%">
+        <label class="control-label" style="font-size: x-large;margin-right: 5%">Select promotion type</label>
+
+        <select class="form-control input-lg" id="promotion_selection">
+            <option value="0">(Select an option)</option>
+            <option value="discount">Discount</option>
+            <option value="bundle">Bundle offer</option>
+            <option value="freeoffer">Free offer</option>
+        </select>
+
+    </div>
+    <div id="promotion_discount" style="display: none">
+        <table class="table" style="margin-top: 50px">
+            <tr>
+                <th class="col-sm-6">Product price</th>
+                <td class="col-sm-3"></td>
+                <td class="col-sm-3" id="discount_original_product_price"></td>
+            </tr>
+            <tr>
+                <th>Select discount amount :<input name="discount_type" type="radio" value="type_price" style="margin-left: 10px" checked > Price
+                    <input name="discount_type" style="margin-left: 50px" type="radio" value="type_percentage"> Percentage  </th>
+                <th><form class="form-inline" style="display: none" id="discount_percentage_form"><input class="form-control" type="number" style="width: 60px" id="discount_percentage_input"> %</form></th>
+                <th><input class="form-control" type="number" style="width: 120px" id="discount_price_input"></th>
+
+            </tr>
+
+
+        </table>
+
+    </div>
+    <div id="promotion_bundle" style="display: none">
+        xyz
+
+    </div>
+    <div id="promotion_free" style="display: none">
+
+        jkl
+    </div>
+    <div style="margin-bottom: 50px;margin-top: 50px;margin-left: 50%">
+        <button type="button" class="btn btn-primary btn-lg">Apply promotion</button>
+    </div>
+
+
+</div>
+<script src="js/new-promotion.js"></script>
+</body>
+
+</html>

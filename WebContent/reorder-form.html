@@ -76,23 +76,26 @@
         </tbody>
     </table>
     <div>
-        <div  id="salesHistoryChart">//style="float: left;width: 50%"
+        <div  id="salesHistoryChart">
+            <!--style="float: left;width: 50%"-->
 
         </div>
-        <div >//style="float: right;width: 50%"
+        <hr>
+        <div >
+            <!--style="float: right;width: 50%"-->
             <div id="demandForecastChart">
 
 
             </div>
-            <form class="form-inline">
+            <form class="form-inline" style="margin-left: 10%">
                 <label for="startDate">Start Date</label>
                 <input type="date" class="form-control" id="startDate" style="margin-right: 5%">
-                <label for="endDate">End Date</label>
+                <label for="endDate" >End Date</label>
                 <input type="date" class="form-control" id="endDate">
-                <div class="clearfix"></div>
+                <!--<div class="clearfix"></div>-->
 
 
-                <label>Demand forecast quantity for <span id="totalDaysForecast"></span> days : </label>
+                <label style="margin-left: 5%">Demand forecast quantity for <span id="totalDaysForecast"></span> days : </label>
                 <input type="number" style="width: 80px;" class="form-control" id="totalForecastQuantity">
             </form>
         </div>
