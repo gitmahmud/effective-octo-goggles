@@ -54,14 +54,6 @@
                 <td id="new_promotion_detail"></td>
             </tr>
             <tr>
-                <th>Price</th>
-                <td id="new_promotion_price"></td>
-            </tr>
-            <tr>
-                <th>Quantity</th>
-                <td id="new_promotion_quantity"></td>
-            </tr>
-            <tr>
                 <th>Product Class</th>
                 <td id="new_promotion_pclass"></td>
             </tr>
@@ -90,19 +82,90 @@
                 <td class="col-sm-3" id="discount_original_product_price"></td>
             </tr>
             <tr>
-                <th>Select discount amount :<input name="discount_type" type="radio" value="type_price" style="margin-left: 10px" checked > Price
-                    <input name="discount_type" style="margin-left: 50px" type="radio" value="type_percentage"> Percentage  </th>
-                <th><form class="form-inline" style="display: none" id="discount_percentage_form"><input class="form-control" type="number" style="width: 60px" id="discount_percentage_input"> %</form></th>
-                <th><input class="form-control" type="number" style="width: 120px" id="discount_price_input"></th>
+                <th>Product quantity :</th>
+                <td></td>
+                <td id="discount_product_quantity"></td>
 
             </tr>
+            <tr>
+                <th>Select discount amount :<input name="discount_type" type="radio" value="type_price"
+                                                   style="margin-left: 10px" checked> Price
+                    <input name="discount_type" style="margin-left: 50px" type="radio" value="type_percentage">
+                    Percentage
+                </th>
+                <th>
+                    <form class="form-inline" style="display: none" id="discount_percentage_form">
+                        <input class="form-control" type="number" style="width: 60px" value="0"
+                               id="discount_percentage_input"> %
+                    </form>
+                </th>
+                <th><input class="form-control" type="number" style="width: 120px" id="discount_price_input" value="0">
+                </th>
+
+            </tr>
+            <tr class="bg-info">
+                <th>Discounted price :</th>
+                <td></td>
+                <td id="discounted_price"></td>
+            </tr>
+            <tr>
+                <th>Total loss due to discount given :</th>
+                <td></td>
+                <td id="discount_total_loss"></td>
+            </tr>
+            <tr>
+                <th>Days needed to Sale out :</th>
+                <td></td>
+                <td id="discount_day_need_sale_out"></td>
+            </tr>
+        </table>
+        <div id="sale_forecast_discount">
+
+
+        </div>
+
+    </div>
+    <div id="promotion_bundle" style="display: none">
+
+
+        <div style="margin-top: 20px;margin-bottom: 20px">
+            <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+                <label class="col-sm-2" for="bundle_name">Bundle Name : </label>
+                <input type="text" class="form-control " id="bundle_name" style="width: 75%">
+            </form>
+
+
+            <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+                <label class="col-sm-2" for="bundle_details">Promotional details : </label>
+                <textarea rows="4" class="form-control " id="bundle_details" style="width: 75%;"></textarea>
+            </form>
+
+            <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
+            <select class="form-control" id="bundle_type_selection" style="width: 15%">
+                <option>Custom</option>
+                <option>3-in-1</option>
+                <option>Storage</option>
+            </select>
+        </div>
+
+        <table class="table table-striped ">
+            <thead>
+            <th class="col-sm-1">#</th>
+            <th class="col-sm-2">Name</th>
+            <th class="col-sm-2">Kind</th>
+            <th class="col-sm-2">Quantity</th>
+            <th class="col-sm-2">Price</th>
+            <th class="col-sm-1"></th>
+
+            </thead>
+            <tbody id="tbody_bundle_items">
+
+
+            </tbody>
 
 
         </table>
 
-    </div>
-    <div id="promotion_bundle" style="display: none">
-        xyz
 
     </div>
     <div id="promotion_free" style="display: none">
@@ -111,6 +174,78 @@
     </div>
     <div style="margin-bottom: 50px;margin-top: 50px;margin-left: 50%">
         <button type="button" class="btn btn-primary btn-lg">Apply promotion</button>
+    </div>
+    <div id="modalChooseBundleProduct" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Choose bundle product</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <th class=""></th>
+                        <th class="">Name</th>
+                        <th class="">Classification<br>
+                            <select id="bundle_product_classification_selection" class="form-control">
+
+                            </select>
+                        </th>
+                        <th>Price
+                            <div>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_price_desc"><span
+                                        class="glyphicon glyphicon-chevron-down"></span></button>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_price_asc"><span
+                                        class="glyphicon glyphicon-chevron-up"></span></button>
+                            </div>
+                        </th>
+                        <th>Sold quantity
+                            <div>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_sold_quantity_desc"><span
+                                        class="glyphicon glyphicon-chevron-down"></span></button>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_sold_quantity_asc"><span
+                                        class="glyphicon glyphicon-chevron-up"></span></button>
+                            </div>
+                        </th>
+                        <th>Stock quantity
+                            <div>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_stock_quantity_desc"><span
+                                        class="glyphicon glyphicon-chevron-down"></span></button>
+                                <button class="btn btn-xs btn-info"
+                                        id="id_choose_bundle_product_stock_quantity_asc"><span
+                                        class="glyphicon glyphicon-chevron-up"></span></button>
+                            </div>
+                        </th>
+
+                        </thead>
+                        <tbody id="tbody_modal_choose_bundle_product">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-success text-center " onclick="onItemChosenBundleModal()" >Done
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+
+
     </div>
 
 
