@@ -1,0 +1,20 @@
+ID,TYPENAME,KINDTEXT,QUANTITY,DESCRIPTION
+1,Complete pc,CPU,1,Complete pc bundle contains  1 cpu   1 motherboard   1 memory   1 HDD and 1 case.
+2,Complete pc,Motherboard,1,Complete pc bundle contains  1 cpu   1 motherboard   1 memory   1 HDD and 1 case.
+3,Complete pc,Memory,1,Complete pc bundle contains  1 cpu   1 motherboard   1 memory   1 HDD and 1 case.
+4,Complete pc,Case,1,Complete pc bundle contains  1 cpu   1 motherboard   1 memory   1 HDD and 1 case.
+5,Complete pc,HDD,1,Complete pc bundle contains  1 cpu   1 motherboard   1 memory   1 HDD and 1 case.
+6,Storage bundle,HDD,1,Storage bundle offer contains 1 HDD and 1 memory .
+7,Storage bundle,Memory,1,Storage bundle offer contains 1 HDD and 1 memory .
+8,Gaming offer,Video Card,1,Gaming  bundle contains 1 Video card and 1 memory.
+9,Gaming offer,Memory,1,Gaming  bundle contains 1 Video card and 1 memory.
+10,Pc core,CPU,1,Pc core offer bundle contains 1 CPU and 1 motherboard.
+11,Pc core,Motherboard,1,Pc core offer bundle contains 1 CPU and 1 motherboard.
+12,3 in 1 (CPU),CPU,3,3 in 1 (CPU)  bundle contains 3 CPU in a bundle.
+13,3 in 1 (Motherboard),Motherboard,3,3 in 1 (Motherboard)  bundle contains 3 motherboard in a bundle.
+14,3 in 1 (Memory),Memory,3,3 in 1 (Memory)  bundle contains 3 memory in a bundle.
+15,3 in 1 (Video Card),Video Card,3,3 in 1 (Video Card)  bundle contains 3 Video card in a bundle.
+16,3 in 1 (HDD),HDD,3,3 in 1 (HDD)  bundle contains 3 HDD in a bundle.
+17,3 in 1 (Case),Case,3,3 in 1 (Case)  bundle contains 3 case in a bundle.
+18,3 in 1 (Globe),Globe,3,3 in 1 (Globe)  bundle contains 3 globe in a bundle.
+19,3 in 1 (Tools),Tools,3,3 in 1 (Tools)  bundle contains 3 tool in a bundle.

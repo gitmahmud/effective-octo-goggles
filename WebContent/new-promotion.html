@@ -142,10 +142,19 @@
 
             <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
             <select class="form-control" id="bundle_type_selection" style="width: 15%">
-                <option>Custom</option>
-                <option>3-in-1</option>
-                <option>Storage</option>
+
             </select>
+            <div style="margin: 20px">
+                <div id="bundleOfferDesc">
+
+
+                </div>
+                <div id="bundleOfferGuide">
+
+                </div>
+
+
+            </div>
         </div>
 
         <table class="table table-striped ">
@@ -155,13 +164,33 @@
             <th class="col-sm-2">Kind</th>
             <th class="col-sm-2">Quantity</th>
             <th class="col-sm-2">Price</th>
-            <th class="col-sm-1"></th>
+            <th class="col-sm-3"></th>
 
             </thead>
             <tbody id="tbody_bundle_items">
 
 
             </tbody>
+            <tr id="id_bundle_add_another_item_row">
+                <td colspan="5">
+                    <button class="btn btn-link" onclick="displayModalChooseBundleProduct()"
+                            id="id_bundle_add_another_item_button">
+                        Add another item
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="4" class="text-right">Total price :</th>
+                <td id="total_price_bundle"></td>
+            </tr>
+            <tr>
+                <th colspan="4" class="text-right"> Set discount</th>
+                <td><input type="number" id="discount_amount_bundle_input" class="form-control" value="0"></td>
+            </tr>
+            <tr>
+                <th colspan="4" class="text-right"> Bundle price :</th>
+                <td id="discount_amount_bundle"></td>
+            </tr>
 
 
         </table>
@@ -169,8 +198,51 @@
 
     </div>
     <div id="promotion_free" style="display: none">
+        <div class="panel panel-primary" style="margin-bottom: 20px;margin-top: 20px">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Free offer</div>
+            <div class="panel-body">
+                <p class="bg-warning" style="margin-top: 20px;margin-bottom: 20px;font-size: large" >
+                    Select another product for creating free product bundle.
+                    Suggestions are given based on price , sold quantity and last sold date
+                </p>
+                <form class=" form-group form-inline">
+                    <label for="freeProductSuggestionSelection">Get product suggestion by : </label>
+                    <select id="freeProductSuggestionSelection" class="form-control" style="width: 150px;">
+                        <option value="0">Maker</option>
+                        <option value="1">Sold Quantity</option>
+                        <option value="2">Unsold</option>
+                    </select>
+                </form>
+                <table class="table table-bordered">
+                    <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Maker</th>
+                    <th>Price</th>
+                    <th>Days since unsold</th>
+                    <th>Sold quantity</th>
 
-        jkl
+                    </thead>
+                    <tbody id="tbody_free_product_suggestion">
+
+
+
+                    </tbody>
+
+
+                </table>
+                <form class="form-inline">
+                <label>Quantity : </label><input type="number" value="1" class="form-control" style="width :80px;">
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
     </div>
     <div style="margin-bottom: 50px;margin-top: 50px;margin-left: 50%">
         <button type="button" class="btn btn-primary btn-lg">Apply promotion</button>
@@ -237,7 +309,7 @@
                 </div>
                 <div class="modal-footer">
 
-                    <button type="button" class="btn btn-success text-center " onclick="onItemChosenBundleModal()" >Done
+                    <button type="button" class="btn btn-success text-center " onclick="onItemChosenBundleModal()">Done
                     </button>
 
                 </div>

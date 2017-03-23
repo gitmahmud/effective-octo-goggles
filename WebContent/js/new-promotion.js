@@ -36,6 +36,9 @@ var bundleProducts = [{
 
 }];
 
+var bundleTypeItems = [];
+var bundleTypeBoolean = false;
+
 
 $('#new_promotion_stock_id').text(stock.id);
 $('#new_promotion_name').text(stock.code);
@@ -47,11 +50,9 @@ $('#discount_product_quantity').text(stock.balance);
 $('#promotion_selection').change(onPromotionSelection);
 
 
-
-
-
-
 function onPromotionSelection() {
+
+    fetchRegularProducts();
 
     if ($(this).val() === 'discount') {
         $('#promotion_discount').show();
@@ -74,6 +75,21 @@ function onPromotionSelection() {
         $('#promotion_bundle').show();
         $('#promotion_free').hide();
 
+        let availableBundleOffers = alasql('SELECT typename from bundletype where kindtext=?', [stock.text]);
+
+        let availableBundleSelection = '<option value="0">Custom</option>';
+        availableBundleOffers.forEach(function (offer, index) {
+            availableBundleSelection += '<option value="' + offer.typename + '">' + offer.typename + '</option>';
+        });
+
+        $('#bundle_type_selection').html(availableBundleSelection);
+        $('#bundleOfferDesc').html('You can choose freely any product in custom bundle offer . ');
+
+        $('#bundle_type_selection').unbind('change');
+
+        $('#bundle_type_selection').change(onBundleTypeChanged);
+
+
         displaySelectedBundleItems();
 
 
@@ -82,6 +98,11 @@ function onPromotionSelection() {
         $('#promotion_discount').hide();
         $('#promotion_bundle').hide();
         $('#promotion_free').show();
+        $('#freeProductSuggestionSelection').unbind('change');
+        $('#freeProductSuggestionSelection').change(onProductSuggestionChanged);
+
+        displayFreeSuggestionTable();
+
 
     }
     else {
@@ -141,26 +162,11 @@ function displaySelectedBundleItems() {
         str += '<tr class=""><td>' + (index + 1) + '</td>' +
             '<td>' + bundleProduct.code + '</td>' +
             '<td>' + bundleProduct.text + '</td>' +
-            '<td><input type="number" value="1" style="width: 50px;" id="bundle_input_quantity_' + bundleProduct.stockId + '" ></td>' +
-            '<td id="bundle_table_product_price_' + bundleProduct.stockId + '">' + stock.price + '</td>' +
+            '<td><input type="number" value="' + bundleProduct.quantity + '" style="width: 50px;" id="bundle_input_quantity_' + bundleProduct.stockId + '" ></td>' +
+            '<td id="bundle_table_product_price_' + bundleProduct.stockId + '">' + bundleProduct.quantity * bundleProduct.price + '</td>' +
             '<td></td></tr>';
 
     });
-
-    str += '<tr id="id_bundle_add_another_item"><td colspan="5"><button class="btn btn-link" onclick="displayModalChooseBundleProduct()" >Add another item</button> </td> ' +
-        '</tr>' +
-        '<tr>' +
-        '<th colspan="4" class="text-right">Total price : </th> ' +
-        '<td id="total_price_bundle"></td>' +
-        '</tr>' +
-        '<tr>' +
-        '<th colspan="4" class="text-right"> Set discount</th> ' +
-        '<td><input type="number" id="discount_amount_bundle_input" class="form-control" value="0"></td>' +
-        '</tr>' +
-        '<tr>' +
-        '<th colspan="4" class="text-right"> Bundle price : </th> ' +
-        '<td id="discount_amount_bundle"></td>' +
-        '</tr>';
 
 
     $('#tbody_bundle_items').html(str);
@@ -172,6 +178,12 @@ function displaySelectedBundleItems() {
     $('#discount_amount_bundle_input').unbind('keyup');
     $('#discount_amount_bundle_input').keyup(onChangeDiscountAmount);
 
+    if (bundleTypeBoolean === true) {
+        $("input[id^='bundle_input_quantity_']").attr('disabled', true);
+    }
+    else {
+        $("input[id^='bundle_input_quantity_']").attr('disabled', false);
+    }
 
 
 }
@@ -182,10 +194,15 @@ function displayModalChooseBundleProduct() {
         classificationSelection += '<option value="' + item.text + '">' + item.text + '</option>';
 
     });
+
     $('#bundle_product_classification_selection').html(classificationSelection);
+
 
     let str = '';
     regularProducts.forEach(function (item, index) {
+        if (bundleTypeBoolean === true && bundleTypeItems[0].kindtext !== item.text) {
+            return;
+        }
         str += '<tr>' +
             '<td><input name="modalBundleProductSelectionInput" type="radio" value="' + index + '"></td>' +
             '<td>' + item.code + '</td>' +
@@ -200,8 +217,18 @@ function displayModalChooseBundleProduct() {
     $('#tbody_modal_choose_bundle_product').html(str);
 
 
-
     initialiseAddAnotherItemsModalListeners();
+
+    if (bundleTypeBoolean === true) {
+        $('#bundle_product_classification_selection').val(bundleTypeItems[0].kindtext);
+        $('#bundle_product_classification_selection').attr('disabled', true);
+
+    }
+    else {
+        $('#bundle_product_classification_selection').val('0');
+        $('#bundle_product_classification_selection').attr('disabled', false);
+
+    }
 
 
     $('#modalChooseBundleProduct').modal('show');
@@ -215,12 +242,26 @@ function onItemChosenBundleModal() {
     regularProducts.splice(selectedProductStockIndex, 1);
 
     bundleProducts.push({
-        'stockId' : selectedProduct.id,
-        'price' : selectedProduct.price,
-        'quantity' : selectedProduct.balance,
-        'code' : selectedProduct.code ,
-        'text' : selectedProduct.text
+        'stockId': selectedProduct.id,
+        'price': selectedProduct.price,
+        'quantity': 1,
+        'code': selectedProduct.code,
+        'text': selectedProduct.text
     });
+
+    if (bundleTypeBoolean === true) {
+        bundleProducts[bundleProducts.length - 1].quantity = bundleTypeItems[0].quantity;
+        bundleTypeItems.splice(0, 1);
+        updateBundleTypeGuideLink();
+
+        console.log('Here');
+
+    }
+    else {
+
+
+    }
+
 
     $('#modalChooseBundleProduct').modal('hide');
     displaySelectedBundleItems();
@@ -251,7 +292,6 @@ function initialiseAddAnotherItemsModalListeners() {
     $('#id_choose_bundle_product_stock_quantity_desc').unbind('click');
     $('#id_choose_bundle_product_stock_quantity_asc').unbind('click');
     $('#bundle_product_classification_selection').unbind('change');
-
 
 
     $('#id_choose_bundle_product_price_desc').on('click', function () {
@@ -303,10 +343,20 @@ function initialiseAddAnotherItemsModalListeners() {
         displayModalChooseBundleProduct();
 
     });
-    $('#bundle_product_classification_selection').change(
-        function () {
-            if ($(this).val() === '0') {
-                regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
+    $('#bundle_product_classification_selection').change(function () {
+        bundleProductClassificationSelectionChanged();
+        displayModalChooseBundleProduct();
+
+    });
+
+
+}
+function bundleProductClassificationSelectionChanged() {
+    let selectedClassification = $('#bundle_product_classification_selection').val();
+    console.log(selectedClassification);
+
+    if (selectedClassification === '0') {
+        regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
                     stock.balance, item.pclass, stock.obsoleteperiod \
                     FROM stock \
                     JOIN whouse ON whouse.id = stock.whouse \
@@ -314,26 +364,21 @@ function initialiseAddAnotherItemsModalListeners() {
                     JOIN kind ON kind.id = item.kind \
                     WHERE whouse.id = 1 and stock.isobsolete = 0');
 
-            }
-            else {
-                regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
+    }
+    else {
+        regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
                     stock.balance, item.pclass, stock.obsoleteperiod \
                     FROM stock \
                     JOIN whouse ON whouse.id = stock.whouse \
                     JOIN item ON item.id = stock.item \
                     JOIN kind ON kind.id = item.kind \
-                    WHERE whouse.id = 1 and stock.isobsolete = 0 and kind.text = ?', [$(this).val()]);
-            }
+                    WHERE whouse.id = 1 and stock.isobsolete = 0 and kind.text = ?', [selectedClassification]);
+    }
 
-            regularProducts.forEach(function (item, index) {
-                item["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
-                    [item.id])[0]["sold_quant"]);
-            });
-
-
-            displayModalChooseBundleProduct();
-        }
-    );
+    regularProducts.forEach(function (item, index) {
+        item["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
+            [item.id])[0]["sold_quant"]);
+    });
 
 
 }
@@ -343,16 +388,169 @@ function setTotalPriceBundle() {
         sum += (product.price * product.quantity);
 
     });
+    console.log(sum);
 
     $('#total_price_bundle').text(sum);
 }
 
 function onChangeDiscountAmount() {
     let discounted_amount = parseInt($('#total_price_bundle').text()) - parseInt($('#discount_amount_bundle_input').val());
-    $('#discount_amount_bundle').text( discounted_amount);
+    $('#discount_amount_bundle').text(discounted_amount);
 
 }
 
+function onBundleTypeChanged() {
+    let currentTypeName = $('#bundle_type_selection').val();
+    bundleProducts = [{
+        'stockId': stock.id,
+        'price': stock.price,
+        'quantity': 1,
+        'code': stock.code,
+        'text': stock.text
+
+    }];
+    fetchRegularProducts();
+
+    if (currentTypeName === '0') {
+        bundleTypeBoolean = false;
+        $('#bundleOfferDesc').html('');
+        $('#bundleOfferGuide').html('You can choose freely any product in custom bundle offer . ');
+
+        $('#id_bundle_add_another_item_button').attr('disabled', false);
+    }
+    else {
+        bundleTypeBoolean = true;
+        bundleTypeItems = alasql('SELECT * from bundletype where typename = ?', [currentTypeName]);
+
+        $('#bundleOfferDesc').html(bundleTypeItems[0].description);
+        for (let i = 0; i < bundleTypeItems.length; i++) {
+            if (bundleTypeItems[i]["kindtext"] === stock.text) {
+                bundleProducts[0].quantity = bundleTypeItems[i]["quantity"];
+                bundleTypeItems.splice(i, 1);
+                break;
+            }
+        }
+
+        updateBundleTypeGuideLink();
+
+
+    }
+
+
+    displaySelectedBundleItems();
+
+}
+
+function updateBundleTypeGuideLink() {
+
+    if (bundleTypeItems.length === 0) {
+
+
+        $('#id_bundle_add_another_item_button').attr('disabled', true);
+        $('#bundleOfferGuide').html('<span class="glyphicon glyphicon-ok"> You have completed bundle creation');
+
+    }
+    else {
+        $('#id_bundle_add_another_item_button').attr('disabled', false);
+        $('#bundleOfferGuide').html('Please select ' + bundleTypeItems[0].kindtext);
+
+    }
+
+}
+
+/* free functions */
+
+function displayFreeSuggestionTable() {
+    let str = '';
+    let suggestionFlag = true;
+
+    regularProducts.forEach(function (product, index) {
+        let rowColor;
+        if (product.price < stock.price) {
+            rowColor = 'danger'
+        } else {
+            if(suggestionFlag === true) {
+                rowColor =  'success';
+                suggestionFlag = false
+            }
+            else
+            {
+                rowColor ='';
+            }
+        }
+
+
+
+
+        str+= '<tr class="'+ rowColor + '" '+ (rowColor === "danger" ?'data-toggle="tooltip" data-placement="top" title="Price of this product is lower than the free product. "' :'' )+ '>'+
+                '<td><input name="inputFreeOfferProductSelection" type="radio" '+ (rowColor === "success" ? "checked" : "" )+'> </td>'+
+                '<td>'+ product.code +'</td>'+
+                '<td>'+ product.maker +'</td>'+
+                '<td>'+ product.price +'</td>'+
+                '<td>'+ product.days_since_last_sell +'</td>'+
+                '<td>'+ product.sold_quantity +'</td>'+
+
+                '</tr>';
+
+
+    });
+
+
+    $('#tbody_free_product_suggestion').html(str);
+
+}
+
+function onProductSuggestionChanged() {
+    let freeProductSuggestionSelectedVal = $('#freeProductSuggestionSelection').val();
+    if (freeProductSuggestionSelectedVal === '0') {
+        regularProducts.sort(function (a, b) {
+            if(a.maker === stock.maker && b.maker === stock.maker)
+            {
+                return -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)
+                        + (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10)
+            }
+            else if (a.maker === stock.maker)
+            {
+               return -1 ;
+            }
+            else
+            {
+                return  1;
+
+            }
+
+        });
+
+
+
+
+
+    }
+    else if (freeProductSuggestionSelectedVal === '1') {
+        regularProducts.sort(function (a, b) {
+            let flag = a.sold_quantity - b.sold_quantity;
+
+            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)+
+            (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10) : flag;
+
+
+        })
+
+    }
+    else {
+
+        regularProducts.sort(function (a, b) {
+
+            let flag =  -a.days_since_last_sell + b.days_since_last_sell;
+            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)+
+                (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10) : flag;
+        })
+
+
+    }
+    displayFreeSuggestionTable();
+
+}
 
 
 /* others */
@@ -449,6 +647,31 @@ function plotSaleForecastChart() {
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
     return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+
+
+}
+function fetchRegularProducts() {
+    regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
+    stock.balance, item.pclass, stock.obsoleteperiod \
+	FROM stock \
+	JOIN whouse ON whouse.id = stock.whouse \
+	JOIN item ON item.id = stock.item \
+	JOIN kind ON kind.id = item.kind \
+	WHERE whouse.id = 1 and stock.isobsolete = 0');
+
+
+    regularProducts.forEach(function (product, index) {
+        product["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
+            [product.id])[0]["sold_quant"]);
+        console.log(product)
+        let tt = alasql('SELECT last(date) AS last_sale from trans where  memo = "Sold"  and stock = ?', [product.id])[0]["last_sale"];
+        console.log(tt);
+        tt = tt === undefined ? '2017-01-01' : tt;
+        tt = tt.split('-');
+        product["days_since_last_sell"] = Math.abs(Math.ceil((new Date() - Date.UTC(parseInt(tt[0]), parseInt(tt[1]) -1, parseInt(tt[2]))) / (24 * 3600 * 1000)));
+
+
+    });
 
 
 }
