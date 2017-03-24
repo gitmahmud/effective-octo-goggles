@@ -13,19 +13,8 @@ var stock = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.deta
 	JOIN kind ON kind.id = item.kind \
 	WHERE whouse.id = 1 and stock.id = ?', [stockId])[0];
 
-var regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
-    stock.balance, item.pclass, stock.obsoleteperiod \
-	FROM stock \
-	JOIN whouse ON whouse.id = stock.whouse \
-	JOIN item ON item.id = stock.item \
-	JOIN kind ON kind.id = item.kind \
-	WHERE whouse.id = 1 and stock.isobsolete = 0');
+var regularProducts;
 
-
-regularProducts.forEach(function (item, index) {
-    item["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
-        [item.id])[0]["sold_quant"]);
-});
 
 var bundleProducts = [{
     'stockId': stock.id,
@@ -58,6 +47,7 @@ function onPromotionSelection() {
         $('#promotion_discount').show();
         $('#promotion_bundle').hide();
         $('#promotion_free').hide();
+        $('#apply_promotion_button').attr('class', "btn btn-primary btn-lg");
 
         $('input[name="discount_type"]').unbind('click');
         $('#discount_price_input').unbind('keyup');
@@ -74,6 +64,7 @@ function onPromotionSelection() {
         $('#promotion_discount').hide();
         $('#promotion_bundle').show();
         $('#promotion_free').hide();
+        $('#apply_promotion_button').attr('class', "btn btn-success btn-lg");
 
         let availableBundleOffers = alasql('SELECT typename from bundletype where kindtext=?', [stock.text]);
 
@@ -98,6 +89,9 @@ function onPromotionSelection() {
         $('#promotion_discount').hide();
         $('#promotion_bundle').hide();
         $('#promotion_free').show();
+        $('#apply_promotion_button').attr('class', "btn btn-info btn-lg");
+
+
         $('#freeProductSuggestionSelection').unbind('change');
         $('#freeProductSuggestionSelection').change(onProductSuggestionChanged);
 
@@ -139,7 +133,11 @@ function onDiscountPriceInput() {
     let discountedPrice = stock.price - discountAmount;
     $('#discounted_price').text(discountedPrice);
     $('#discount_total_loss').text(discountAmount * stock.balance);
-    plotSaleForecastChart();
+
+
+    // console.log(discountProductMultiplier, ' multiplier');
+
+    plotSaleForecastChart('sale_forecast_discount', getMultiplierForDiscount());
 
 
 }
@@ -149,6 +147,12 @@ function onDiscountPercentageInput() {
     console.log(percentPrice);
     $('#discount_price_input').val(percentPrice);
     onDiscountPriceInput();
+}
+function getMultiplierForDiscount(){
+    let discountPercentage = ($('#discount_price_input').val() * 100) / stock.price;
+    let discountProductMultiplier = (discountPercentage * 5) / 100;
+    return discountProductMultiplier;
+
 }
 
 
@@ -164,13 +168,15 @@ function displaySelectedBundleItems() {
             '<td>' + bundleProduct.text + '</td>' +
             '<td><input type="number" value="' + bundleProduct.quantity + '" style="width: 50px;" id="bundle_input_quantity_' + bundleProduct.stockId + '" ></td>' +
             '<td id="bundle_table_product_price_' + bundleProduct.stockId + '">' + bundleProduct.quantity * bundleProduct.price + '</td>' +
-            '<td></td></tr>';
+            '<td>' + (index > 0 ? '<button id="bundle_item_delete_' + bundleProduct.stockId + '"  class="glyphicon glyphicon-trash btn-danger btn btn-sm"></button>' : '') + ' </td></tr>';
 
     });
 
 
     $('#tbody_bundle_items').html(str);
     setTotalPriceBundle();
+    plotSaleForecastChart('sale_forecast_bundle' , getMultiplerForBundleOffer());
+
 
     $("input[id^='bundle_input_quantity_']").unbind('keyup');
     $("input[id^='bundle_input_quantity_']").keyup(onChangeBundleQuantity);
@@ -178,12 +184,18 @@ function displaySelectedBundleItems() {
     $('#discount_amount_bundle_input').unbind('keyup');
     $('#discount_amount_bundle_input').keyup(onChangeDiscountAmount);
 
+    $("button[id^='bundle_item_delete_']").unbind('click');
+    $("button[id^='bundle_item_delete_']").on('click', onBundleItemDeleteClicked);
+
+
     if (bundleTypeBoolean === true) {
         $("input[id^='bundle_input_quantity_']").attr('disabled', true);
     }
     else {
         $("input[id^='bundle_input_quantity_']").attr('disabled', false);
     }
+
+
 
 
 }
@@ -239,7 +251,7 @@ function onItemChosenBundleModal() {
 
     let selectedProductStockIndex = $('input[name="modalBundleProductSelectionInput"]:checked').val();
     let selectedProduct = regularProducts[selectedProductStockIndex];
-    regularProducts.splice(selectedProductStockIndex, 1);
+    regularProducts[selectedProductStockIndex]["selectedInBundle"] = true;
 
     bundleProducts.push({
         'stockId': selectedProduct.id,
@@ -278,6 +290,7 @@ function onChangeBundleQuantity() {
 
     $('#bundle_table_product_price_' + stockId).text(selectedProduct.quantity * selectedProduct.price);
     setTotalPriceBundle();
+    plotSaleForecastChart('sale_forecast_bundle' , getMultiplerForBundleOffer());
 
 
 }
@@ -396,6 +409,7 @@ function setTotalPriceBundle() {
 function onChangeDiscountAmount() {
     let discounted_amount = parseInt($('#total_price_bundle').text()) - parseInt($('#discount_amount_bundle_input').val());
     $('#discount_amount_bundle').text(discounted_amount);
+    plotSaleForecastChart('sale_forecast_bundle' , getMultiplerForBundleOffer());
 
 }
 
@@ -458,6 +472,30 @@ function updateBundleTypeGuideLink() {
 
 }
 
+function onBundleItemDeleteClicked() {
+    console.log($(this));
+
+
+}
+
+function getMultiplerForBundleOffer() {
+    let denominator = 0, nominator = 0;
+
+    console.log(bundleProducts);
+    bundleProducts.forEach(function (bundleProduct) {
+        let t = alasql('SELECT maxusage, avgdailyusage from stock where id=?', [bundleProduct.stockId])[0];
+
+        denominator += bundleProduct.quantity * t.avgdailyusage;
+        nominator += bundleProduct.quantity * t.maxusage;
+
+    });
+    let discountMultiplier = (parseInt($('#discount_amount_bundle_input').val()) / parseInt($('#total_price_bundle').text())) * 5;
+
+    return (denominator / nominator) + discountMultiplier;
+
+
+}
+
 /* free functions */
 
 function displayFreeSuggestionTable() {
@@ -469,28 +507,25 @@ function displayFreeSuggestionTable() {
         if (product.price < stock.price) {
             rowColor = 'danger'
         } else {
-            if(suggestionFlag === true) {
-                rowColor =  'success';
+            if (suggestionFlag === true) {
+                rowColor = 'success';
                 suggestionFlag = false
             }
-            else
-            {
-                rowColor ='';
+            else {
+                rowColor = '';
             }
         }
 
 
+        str += '<tr class="' + rowColor + '" ' + (rowColor === "danger" ? 'data-toggle="tooltip" data-placement="top" title="Price of this product is lower than the free product. "' : '' ) + '>' +
+            '<td><input name="inputFreeOfferProductSelection" type="radio" value="'+product.id +'" ' + (rowColor === "success" ? "checked" : "" ) + '> </td>' +
+            '<td>' + product.code + '</td>' +
+            '<td>' + product.maker + '</td>' +
+            '<td>' + product.price + '</td>' +
+            '<td>' + product.days_since_last_sell + '</td>' +
+            '<td>' + product.sold_quantity + '</td>' +
 
-
-        str+= '<tr class="'+ rowColor + '" '+ (rowColor === "danger" ?'data-toggle="tooltip" data-placement="top" title="Price of this product is lower than the free product. "' :'' )+ '>'+
-                '<td><input name="inputFreeOfferProductSelection" type="radio" '+ (rowColor === "success" ? "checked" : "" )+'> </td>'+
-                '<td>'+ product.code +'</td>'+
-                '<td>'+ product.maker +'</td>'+
-                '<td>'+ product.price +'</td>'+
-                '<td>'+ product.days_since_last_sell +'</td>'+
-                '<td>'+ product.sold_quantity +'</td>'+
-
-                '</tr>';
+            '</tr>';
 
 
     });
@@ -504,25 +539,19 @@ function onProductSuggestionChanged() {
     let freeProductSuggestionSelectedVal = $('#freeProductSuggestionSelection').val();
     if (freeProductSuggestionSelectedVal === '0') {
         regularProducts.sort(function (a, b) {
-            if(a.maker === stock.maker && b.maker === stock.maker)
-            {
-                return -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)
-                        + (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10)
+            if (a.maker === stock.maker && b.maker === stock.maker) {
+                return -(a.price + 100 * a.days_since_last_sell + a.sold_quantity * 10)
+                    + (b.price + 100 * b.days_since_last_sell + b.sold_quantity * 10)
             }
-            else if (a.maker === stock.maker)
-            {
-               return -1 ;
+            else if (a.maker === stock.maker) {
+                return -1;
             }
-            else
-            {
-                return  1;
+            else {
+                return 1;
 
             }
 
         });
-
-
-
 
 
     }
@@ -530,8 +559,8 @@ function onProductSuggestionChanged() {
         regularProducts.sort(function (a, b) {
             let flag = a.sold_quantity - b.sold_quantity;
 
-            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)+
-            (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10) : flag;
+            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity * 10) +
+                (b.price + 100 * b.days_since_last_sell + b.sold_quantity * 10) : flag;
 
 
         })
@@ -541,9 +570,9 @@ function onProductSuggestionChanged() {
 
         regularProducts.sort(function (a, b) {
 
-            let flag =  -a.days_since_last_sell + b.days_since_last_sell;
-            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity *10)+
-                (b.price + 100 * b.days_since_last_sell + b.sold_quantity *10) : flag;
+            let flag = -a.days_since_last_sell + b.days_since_last_sell;
+            return flag === 0 ? -(a.price + 100 * a.days_since_last_sell + a.sold_quantity * 10) +
+                (b.price + 100 * b.days_since_last_sell + b.sold_quantity * 10) : flag;
         })
 
 
@@ -552,14 +581,23 @@ function onProductSuggestionChanged() {
 
 }
 
+function getMultiplierForFreeOffer() {
+
+    let selectedProductStockId = parseInt($('input[name="inputFreeOfferProductSelection"]:checked').val());
+
+    let selectedProduct = regularProducts.find(function (product) {
+        return product.id === selectedProductStockId;
+    });
+    let stockQuant = parseInt($('#free_input_quantity').val());
+
+    return  (selectedProduct.avgdailyusage / selectedProduct.maxusage)/ stockQuant ;
+
+}
+
 
 /* others */
 
-function plotSaleForecastChart() {
-    let discountPercentage = ($('#discount_price_input').val() * 100) / stock.price;
-    console.log(discountPercentage, ' sale history');
-    let discountProductMultiplier = (discountPercentage * 5) / 100;
-    console.log(discountProductMultiplier, ' multiplier');
+function plotSaleForecastChart(divId, discountProductMultiplier) {
 
     let todayDate = getDatefromMS(new Date());
     let allForecastData = alasql('SELECT * from forecast where times > ? and stockid = ?', [todayDate, stock.id]);
@@ -593,13 +631,21 @@ function plotSaleForecastChart() {
     }
 
     $('#discount_day_need_sale_out').text(allForecastData.length);
+    $('#bundle_sale_out_day').text(allForecastData.length);
 
-    Highcharts.chart('sale_forecast_discount', {
+
+
+    let  charTitle = 'Sales forecast after discount applied ';
+    charTitle = divId === 'sale_forecast_bundle' ? 'Sales forecast for bundle' : charTitle;
+
+
+
+    Highcharts.chart(divId, {
         chart: {
             type: 'column'
         },
         title: {
-            text: 'Sales forecast after discount applied '
+            text: charTitle
         },
         xAxis: {
             type: 'datetime',
@@ -652,7 +698,7 @@ function getDatefromMS(currentDate) {
 }
 function fetchRegularProducts() {
     regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
-    stock.balance, item.pclass, stock.obsoleteperiod \
+    stock.balance, item.pclass, stock.obsoleteperiod , stock.maxusage , stock.avgdailyusage \
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \
 	JOIN item ON item.id = stock.item \
@@ -668,10 +714,91 @@ function fetchRegularProducts() {
         console.log(tt);
         tt = tt === undefined ? '2017-01-01' : tt;
         tt = tt.split('-');
-        product["days_since_last_sell"] = Math.abs(Math.ceil((new Date() - Date.UTC(parseInt(tt[0]), parseInt(tt[1]) -1, parseInt(tt[2]))) / (24 * 3600 * 1000)));
+        product["days_since_last_sell"] = Math.abs(Math.ceil((new Date() - Date.UTC(parseInt(tt[0]), parseInt(tt[1]) - 1, parseInt(tt[2]))) / (24 * 3600 * 1000)));
 
+        product["selectedInBundle"] = false;
 
     });
+
+
+}
+function onClickApplyPromotion() {
+    let promotionmasterid = alasql('SELECT MAX(id)+1 AS max_id from promotionmaster')[0]['max_id'];
+    promotionmasterid = promotionmasterid === undefined ? 1 : promotionmasterid;
+
+
+    if ($('#promotion_selection').val() === '0') {
+        alert('Select a promotion type first. ');
+        return;
+    }
+    else if ($('#promotion_selection').val() === 'discount') {
+
+        let discountid = alasql('SELECT MAX(id)+1 AS max_id from promotiondiscount')[0]['max_id'];
+        discountid = discountid === undefined ? 1 : discountid;
+
+        alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
+            [promotionmasterid, getDatefromMS(new Date()), '', 'discount', stock.id, getMultiplierForDiscount() ]);
+
+        alasql('INSERT INTO promotiondiscount VALUES(?,?,?);',
+            [discountid , promotionmasterid , parseInt($('#discount_price_input').val())]);
+
+    }
+    else if ($('#promotion_selection').val() === 'bundle') {
+        // console.log('hh');
+
+        let bundleid = alasql('SELECT MAX(id)+1 AS max_id from promotionbundle')[0]['max_id'];
+        bundleid = bundleid === undefined ? 1 : bundleid;
+
+        let bundleitemID = alasql('SELECT MAX(id)+1 AS max_id from bundleitems')[0]['max_id'];
+        bundleitemID = bundleitemID === undefined ? 1 : bundleitemID;
+
+
+        let bundleName = $('#bundle_name').val();
+        let bundleDetails = $('#bundle_details').val();
+
+        if(bundleName === '' || bundleDetails === '')
+        {
+            alert('Please provide bundle name  and promotional details');
+            return ;
+
+        }
+
+        let bundleType = $('#bundle_type_selection').val();
+        let bundleDiscount = parseInt($('#discount_amount_bundle_input').val());
+        let bundlePrice = parseInt($('#discount_amount_bundle').val());
+
+
+        alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
+            [promotionmasterid, getDatefromMS(new Date()), '', 'bundle', stock.id ,getMultiplerForBundleOffer() ]);
+
+
+        alasql('INSERT INTO promotionbundle VALUES(?,?,?,?,?,?,?)',
+            [bundleid , promotionmasterid , bundleName , bundleDetails , bundleType , bundleDiscount , bundlePrice ]);
+
+        bundleProducts.forEach(function (bundleProduct) {
+           alasql('INSERT INTO bundleitems VALUES(?,?,?,?);',
+               [bundleitemID , bundleid , bundleProduct.stockId , bundleProduct.quantity]);
+        });
+
+
+
+
+    }
+    else {
+        let freeid = alasql('SELECT MAX(id)+1 AS max_id from promotionfree')[0]['max_id'];
+        freeid = freeid === undefined ? 1 : freeid;
+
+        let stockId = parseInt($('input[name="inputFreeOfferProductSelection"]:checked').val());
+        let stockQuant = parseInt($('#free_input_quantity').val());
+
+        alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
+            [promotionmasterid, getDatefromMS(new Date()), '', 'free', stock.id , getMultiplierForFreeOffer()]);
+
+        alasql('INSERT INTO promotionfree VALUES(?,?,?,?);',
+            [freeid , promotionmasterid , stockId , stockQuant ]);
+
+
+    }
 
 
 }

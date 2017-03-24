@@ -62,6 +62,11 @@
 
 	<div class="container">
 		<form action="index.html" class="form-inline text-center">
+			<div class="form-group text-left" style="margin-right: 10%">
+				<label>Today : </label>
+				<input type="date" id="input_today" class="form-control">
+
+			</div>
 			<div class="form-group" style="display: none">
 				<label>Warehouse</label> <select name="q1" class="form-control">
 					<option value="0">All</option>
@@ -102,6 +107,39 @@
 			</thead>
 			<tbody id="tbody-stocks"></tbody>
 		</table>
+
+		<div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
+			<!-- Default panel contents -->
+			<div class="panel-heading">Promotional products</div>
+			<div class="panel-body">
+				<table class="table table-hover table-bordered table-striped table-condensed">
+					<thead>
+					<th>Name</th>
+					<th>Detail</th>
+					<th>Quantity</th>
+					<th>Current promotion</th>
+					<th>Promotion start</th>
+
+					</thead>
+					<tbody id="tbody_promotional_list">
+
+
+					</tbody>
+
+				</table>
+
+
+
+
+
+
+			</div>
+		</div>
+
+
+
+
+
 	</div>
 	<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
 	<script src="js/index.js"></script>

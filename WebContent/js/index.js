@@ -1,4 +1,24 @@
 var whouseId = parseInt($.url().param('inv'));
+
+if(localStorage.getItem("today") === null)
+{
+    localStorage.setItem("today" , getDatefromMS(new Date()));
+    $('#input_today').val(getDatefromMS(new Date()));
+}
+else
+{
+    let d = localStorage.getItem("today");
+    $('#input_today').val(d);
+
+}
+$('#input_today').change(function () {
+    localStorage.setItem("today" ,$('#input_today').val() );
+
+});
+
+
+
+
 // create search box
 var rows = alasql('SELECT * FROM whouse;');
 for (var i = 0; i < rows.length; i++) {
@@ -64,9 +84,14 @@ $('tbody > tr').css('cursor', 'pointer').on('click', function () {
 });
 
 
+
+
+
+
 //reorder notification
 initiateReorderNotification();
-initiateObsoleteNotification()
+initiateObsoleteNotification();
+displayPromotionalProduct();
 
 function initiateReorderNotification() {
     let reorderCount = 0;
@@ -75,10 +100,10 @@ function initiateReorderNotification() {
         if (stocks[i]["isobsolete"] !== 2) {
             let currentStockValue = stocks[i]["balance"];
             let safetyStock = stocks[i]["maxusage"] * stocks[i]["maxleadtime"] - stocks[i]["avgdailyusage"] * stocks[i]["leadtime"];
-            console.log('dafety ' + safetyStock);
+            // console.log('dafety ' + safetyStock);
             let reorderQuantity = stocks[i]["leadtime"] * stocks[i]["avgdailyusage"] + safetyStock;
 
-            console.log('reorder ' + reorderQuantity);
+            // console.log('reorder ' + reorderQuantity);
             if (currentStockValue <= reorderQuantity) {
                 reorderCount++;
                 // reorderLink+=stocks[i]["id"]+','
@@ -121,11 +146,11 @@ function initiateObsoleteNotification() {
                 obsoleteCount++;
                 alasql('UPDATE stock SET isobsolete=1 WHERE id=?', [stocks[i]["id"]]);
             }
-            console.log(obsoleteCount, maxLastSaleDate, lastSale);
+            // console.log(obsoleteCount, maxLastSaleDate, lastSale);
         }
 
     }
-    console.log(obsoleteCount);
+    // console.log(obsoleteCount);
 
     if (obsoleteCount > 0) {
         $('#obsoleteNotificationId').css('background', 'blue');
@@ -142,6 +167,37 @@ function initiateObsoleteNotification() {
 
 
 }
+function displayPromotionalProduct() {
+    let currentPromotions = alasql("SELECT * from promotionmaster where enddate = ''");
+    let str = '';
+
+    currentPromotions.forEach(function (currentPromotion) {
+        let stock = stocks.find(function (s) {
+            // console.log(s.id,currentPromotion.obsoletestockid);
+            return s.id === currentPromotion.obsoletestockid;
+        });
+        let rowColor =  currentPromotion.type === 'discount' ? 'primary' : (currentPromotion.type === 'bundle' ? 'success' : 'info');
+        str += '<tr  class="'+ rowColor+'" data-href="promotion.html?id=' + stock.id + '">'+
+                '<td>'+ stock.code +'</td>'+
+                '<td>'+ stock.detail +'</td>'+
+                '<td>'+ stock.balance +'</td>'+
+                '<td class="text-capitalize">'+ currentPromotion.type +'</td>'+
+                '<td>'+ currentPromotion.startdate +'</td>'+
+            '</tr>';
+    });
+
+    $('#tbody_promotional_list').html(str);
+
+    $('tbody > tr').css('cursor', 'pointer').on('click', function () {
+        alert( $(this).attr('data-href'))
+        window.location.replace( $(this).attr('data-href'));
+    });
+
+
+
+
+
+}
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
@@ -149,7 +205,6 @@ function getDatefromMS(currentDate) {
 
 
 }
-
 
 
 

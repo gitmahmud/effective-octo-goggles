@@ -75,169 +75,189 @@
 
     </div>
     <div id="promotion_discount" style="display: none">
-        <table class="table" style="margin-top: 50px">
-            <tr>
-                <th class="col-sm-6">Product price</th>
-                <td class="col-sm-3"></td>
-                <td class="col-sm-3" id="discount_original_product_price"></td>
-            </tr>
-            <tr>
-                <th>Product quantity :</th>
-                <td></td>
-                <td id="discount_product_quantity"></td>
+        <div class="panel panel-primary" style="margin-bottom: 20px;margin-top: 20px">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Discount offer</div>
+            <div class="panel-body">
+                <table class="table" style="margin-top: 50px">
+                    <tr>
+                        <th class="col-sm-6">Product price</th>
+                        <td class="col-sm-3"></td>
+                        <td class="col-sm-3" id="discount_original_product_price"></td>
+                    </tr>
+                    <tr>
+                        <th>Product quantity :</th>
+                        <td></td>
+                        <td id="discount_product_quantity"></td>
 
-            </tr>
-            <tr>
-                <th>Select discount amount :<input name="discount_type" type="radio" value="type_price"
-                                                   style="margin-left: 10px" checked> Price
-                    <input name="discount_type" style="margin-left: 50px" type="radio" value="type_percentage">
-                    Percentage
-                </th>
-                <th>
-                    <form class="form-inline" style="display: none" id="discount_percentage_form">
-                        <input class="form-control" type="number" style="width: 60px" value="0"
-                               id="discount_percentage_input"> %
-                    </form>
-                </th>
-                <th><input class="form-control" type="number" style="width: 120px" id="discount_price_input" value="0">
-                </th>
+                    </tr>
+                    <tr>
+                        <th>Select discount amount :<input name="discount_type" type="radio" value="type_price"
+                                                           style="margin-left: 10px" checked> Price
+                            <input name="discount_type" style="margin-left: 50px" type="radio" value="type_percentage">
+                            Percentage
+                        </th>
+                        <th>
+                            <form class="form-inline" style="display: none" id="discount_percentage_form">
+                                <input class="form-control" type="number" style="width: 60px" value="0"
+                                       id="discount_percentage_input"> %
+                            </form>
+                        </th>
+                        <th><input class="form-control" type="number" style="width: 120px" id="discount_price_input"
+                                   value="0">
+                        </th>
 
-            </tr>
-            <tr class="bg-info">
-                <th>Discounted price :</th>
-                <td></td>
-                <td id="discounted_price"></td>
-            </tr>
-            <tr>
-                <th>Total loss due to discount given :</th>
-                <td></td>
-                <td id="discount_total_loss"></td>
-            </tr>
-            <tr>
-                <th>Days needed to Sale out :</th>
-                <td></td>
-                <td id="discount_day_need_sale_out"></td>
-            </tr>
-        </table>
-        <div id="sale_forecast_discount">
+                    </tr>
+                    <tr class="bg-info">
+                        <th>Discounted price :</th>
+                        <td></td>
+                        <td id="discounted_price"></td>
+                    </tr>
+                    <tr>
+                        <th>Total loss due to discount given :</th>
+                        <td></td>
+                        <td id="discount_total_loss"></td>
+                    </tr>
+                    <tr>
+                        <th>Days needed to Sale out :</th>
+                        <td></td>
+                        <td><label id="discount_day_need_sale_out" class="label-warning"></label></td>
+                    </tr>
+                </table>
+                <div id="sale_forecast_discount">
 
 
+                </div>
+            </div>
         </div>
 
     </div>
     <div id="promotion_bundle" style="display: none">
+        <div class="panel panel-success" style="margin-bottom: 20px;margin-top: 20px">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Bundle offer</div>
+            <div class="panel-body">
+                <div style="margin-top: 20px;margin-bottom: 20px">
+                    <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+                        <label class="col-sm-2" for="bundle_name">Bundle Name : </label>
+                        <input type="text" class="form-control " id="bundle_name" style="width: 75%">
+                    </form>
 
 
-        <div style="margin-top: 20px;margin-bottom: 20px">
-            <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
-                <label class="col-sm-2" for="bundle_name">Bundle Name : </label>
-                <input type="text" class="form-control " id="bundle_name" style="width: 75%">
-            </form>
+                    <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+                        <label class="col-sm-2" for="bundle_details">Promotional details : </label>
+                        <textarea rows="4" class="form-control " id="bundle_details" style="width: 75%;"></textarea>
+                    </form>
+
+                    <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
+                    <select class="form-control" id="bundle_type_selection" style="width: 15%">
+
+                    </select>
+                    <div style="margin: 20px">
+                        <div id="bundleOfferDesc">
 
 
-            <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
-                <label class="col-sm-2" for="bundle_details">Promotional details : </label>
-                <textarea rows="4" class="form-control " id="bundle_details" style="width: 75%;"></textarea>
-            </form>
+                        </div>
+                        <div id="bundleOfferGuide">
 
-            <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
-            <select class="form-control" id="bundle_type_selection" style="width: 15%">
+                        </div>
 
-            </select>
-            <div style="margin: 20px">
-                <div id="bundleOfferDesc">
 
+                    </div>
+                </div>
+
+                <table class="table table-striped ">
+                    <thead>
+                    <th class="col-sm-1">#</th>
+                    <th class="col-sm-2">Name</th>
+                    <th class="col-sm-2">Kind</th>
+                    <th class="col-sm-2">Quantity</th>
+                    <th class="col-sm-2">Price</th>
+                    <th class="col-sm-1">Delete ?</th>
+
+                    </thead>
+                    <tbody id="tbody_bundle_items">
+
+
+                    </tbody>
+                    <tr id="id_bundle_add_another_item_row">
+                        <td colspan="5">
+                            <button class="btn btn-link" onclick="displayModalChooseBundleProduct()"
+                                    id="id_bundle_add_another_item_button">
+                                Add another item
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="text-right">Total price :</th>
+                        <td id="total_price_bundle"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="text-right"> Set discount</th>
+                        <td><input type="number" id="discount_amount_bundle_input" class="form-control" value="0"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="text-right"> Bundle price :</th>
+                        <td id="discount_amount_bundle"></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="text-right">Days needed to sell out</th>
+                        <td id="bundle_sale_out_day"></td>
+                    </tr>
+
+
+                </table>
+                <div id="sale_forecast_bundle">
 
                 </div>
-                <div id="bundleOfferGuide">
-
-                </div>
-
-
             </div>
         </div>
-
-        <table class="table table-striped ">
-            <thead>
-            <th class="col-sm-1">#</th>
-            <th class="col-sm-2">Name</th>
-            <th class="col-sm-2">Kind</th>
-            <th class="col-sm-2">Quantity</th>
-            <th class="col-sm-2">Price</th>
-            <th class="col-sm-3"></th>
-
-            </thead>
-            <tbody id="tbody_bundle_items">
-
-
-            </tbody>
-            <tr id="id_bundle_add_another_item_row">
-                <td colspan="5">
-                    <button class="btn btn-link" onclick="displayModalChooseBundleProduct()"
-                            id="id_bundle_add_another_item_button">
-                        Add another item
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="4" class="text-right">Total price :</th>
-                <td id="total_price_bundle"></td>
-            </tr>
-            <tr>
-                <th colspan="4" class="text-right"> Set discount</th>
-                <td><input type="number" id="discount_amount_bundle_input" class="form-control" value="0"></td>
-            </tr>
-            <tr>
-                <th colspan="4" class="text-right"> Bundle price :</th>
-                <td id="discount_amount_bundle"></td>
-            </tr>
-
-
-        </table>
 
 
     </div>
     <div id="promotion_free" style="display: none">
-        <div class="panel panel-primary" style="margin-bottom: 20px;margin-top: 20px">
-            <!-- Default panel contents -->
-            <div class="panel-heading">Free offer</div>
-            <div class="panel-body">
-                <p class="bg-warning" style="margin-top: 20px;margin-bottom: 20px;font-size: large" >
-                    Select another product for creating free product bundle.
-                    Suggestions are given based on price , sold quantity and last sold date
-                </p>
-                <form class=" form-group form-inline">
-                    <label for="freeProductSuggestionSelection">Get product suggestion by : </label>
-                    <select id="freeProductSuggestionSelection" class="form-control" style="width: 150px;">
-                        <option value="0">Maker</option>
-                        <option value="1">Sold Quantity</option>
-                        <option value="2">Unsold</option>
-                    </select>
-                </form>
-                <table class="table table-bordered">
-                    <thead>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Maker</th>
-                    <th>Price</th>
-                    <th>Days since unsold</th>
-                    <th>Sold quantity</th>
 
-                    </thead>
-                    <tbody id="tbody_free_product_suggestion">
+                <div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">Free offer</div>
+                    <div class="panel-body">
+                        <p class="bg-warning" style="margin-top: 20px;margin-bottom: 20px;font-size: large">
+                            Select another product for creating free product bundle.
+                            Suggestions are given based on price , sold quantity and last sold date
+                        </p>
+                        <form class=" form-group form-inline">
+                            <label for="freeProductSuggestionSelection">Get product suggestion by : </label>
+                            <select id="freeProductSuggestionSelection" class="form-control" style="width: 150px;">
+                                <option value="0">Maker</option>
+                                <option value="1">Sold Quantity</option>
+                                <option value="2">Unsold</option>
+                            </select>
+                        </form>
+                        <table class="table table-bordered">
+                            <thead>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Maker</th>
+                            <th>Price</th>
+                            <th>Days since unsold</th>
+                            <th>Sold quantity</th>
 
-
-
-                    </tbody>
+                            </thead>
+                            <tbody id="tbody_free_product_suggestion">
 
 
-                </table>
-                <form class="form-inline">
-                <label>Quantity : </label><input type="number" value="1" class="form-control" style="width :80px;">
-                </form>
+                            </tbody>
 
 
-            </div>
+                        </table>
+                        <form class="form-inline">
+                            <label>Quantity : </label>
+                            <input type="number" value="1" class="form-control" id="free_input_quantity" style="width :80px;">
+                        </form>
+
+
+                    </div>
+
 
 
         </div>
@@ -245,7 +265,9 @@
 
     </div>
     <div style="margin-bottom: 50px;margin-top: 50px;margin-left: 50%">
-        <button type="button" class="btn btn-primary btn-lg">Apply promotion</button>
+        <button type="button" class="btn btn-primary btn-lg" id="apply_promotion_button" onclick="onClickApplyPromotion()">
+            Apply promotion
+        </button>
     </div>
     <div id="modalChooseBundleProduct" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">

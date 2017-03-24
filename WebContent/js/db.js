@@ -116,6 +116,28 @@ DB.load = function () {
             }
         });
 
+    alasql('DROP TABLE IF EXISTS promotionmaster;');
+    alasql('CREATE TABLE promotionmaster(id INT IDENTITY, startdate date , enddate date, type STRING ,' +
+        'obsoletestockid INT , multiplier INT );');
+
+    alasql('DROP TABLE IF EXISTS promotiondiscount;');
+    alasql('CREATE TABLE promotiondiscount(id INT IDENTITY, pmid INT , discountamount INT );');
+
+    alasql('DROP TABLE IF EXISTS promotionbundle;');
+    alasql('CREATE TABLE promotionbundle(id INT IDENTITY, pmid INT , name STRING , details STRING , bundletype STRING ,' +
+        ' discount INT , bundleprice  );');
+
+    alasql('DROP TABLE IF EXISTS bundleitems;');
+    alasql('CREATE TABLE bundleitems(id INT IDENTITY, pbid INT , stockid INT , quantity INT );');
+
+    alasql('DROP TABLE IF EXISTS promotionfree;');
+    alasql('CREATE TABLE promotionfree(id INT IDENTITY, pmid INT , originalstockid INT , quantity INT );');
+
+
+
+
+
+
 
     // Reload page
     Promise.all([pkind, pitem, pwhouse, pstock, ptrans, pforecast, psupplier, psupplierrating , pbundletype]).then(function () {
