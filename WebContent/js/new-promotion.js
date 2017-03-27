@@ -3,6 +3,7 @@
  */
 let stockId = parseInt($.url().param('id'));
 console.log(stockId);
+var today = localStorage.getItem('today');
 
 
 var stock = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
@@ -599,7 +600,7 @@ function getMultiplierForFreeOffer() {
 
 function plotSaleForecastChart(divId, discountProductMultiplier) {
 
-    let todayDate = getDatefromMS(new Date());
+    let todayDate = today;
     let allForecastData = alasql('SELECT * from forecast where times > ? and stockid = ?', [todayDate, stock.id]);
 
 
@@ -714,7 +715,12 @@ function fetchRegularProducts() {
         console.log(tt);
         tt = tt === undefined ? '2017-01-01' : tt;
         tt = tt.split('-');
-        product["days_since_last_sell"] = Math.abs(Math.ceil((new Date() - Date.UTC(parseInt(tt[0]), parseInt(tt[1]) - 1, parseInt(tt[2]))) / (24 * 3600 * 1000)));
+
+        let todayArr = today.split('-');
+
+
+        product["days_since_last_sell"] = Math.abs(Math.ceil((Date.UTC(parseInt([todayArr[0]]) , parseInt(todayArr[1]) -1  ,parseInt(todayArr[2]) )
+            - Date.UTC(parseInt(tt[0]), parseInt(tt[1]) - 1, parseInt(tt[2]))) / (24 * 3600 * 1000)));
 
         product["selectedInBundle"] = false;
 
@@ -736,8 +742,10 @@ function onClickApplyPromotion() {
         let discountid = alasql('SELECT MAX(id)+1 AS max_id from promotiondiscount')[0]['max_id'];
         discountid = discountid === undefined ? 1 : discountid;
 
+        alasql('UPDATE stock SET isobsolete = 3 where id = ?',[stock.id]);
+
         alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
-            [promotionmasterid, getDatefromMS(new Date()), '', 'discount', stock.id, getMultiplierForDiscount() ]);
+            [promotionmasterid, today, '', 'discount', stock.id, getMultiplierForDiscount() ]);
 
         alasql('INSERT INTO promotiondiscount VALUES(?,?,?);',
             [discountid , promotionmasterid , parseInt($('#discount_price_input').val())]);
@@ -765,11 +773,12 @@ function onClickApplyPromotion() {
 
         let bundleType = $('#bundle_type_selection').val();
         let bundleDiscount = parseInt($('#discount_amount_bundle_input').val());
-        let bundlePrice = parseInt($('#discount_amount_bundle').val());
+        let bundlePrice = parseInt($('#discount_amount_bundle').text());
 
+        alasql('UPDATE stock SET isobsolete = 4 where id = ?',[stock.id]);
 
         alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
-            [promotionmasterid, getDatefromMS(new Date()), '', 'bundle', stock.id ,getMultiplerForBundleOffer() ]);
+            [promotionmasterid, today, '', 'bundle', stock.id ,getMultiplerForBundleOffer() ]);
 
 
         alasql('INSERT INTO promotionbundle VALUES(?,?,?,?,?,?,?)',
@@ -791,14 +800,18 @@ function onClickApplyPromotion() {
         let stockId = parseInt($('input[name="inputFreeOfferProductSelection"]:checked').val());
         let stockQuant = parseInt($('#free_input_quantity').val());
 
+        alasql('UPDATE stock SET isobsolete = 5 where id = ?',[stock.id]);
+
         alasql('INSERT INTO promotionmaster VALUES(?,?,?,?,?,?);',
-            [promotionmasterid, getDatefromMS(new Date()), '', 'free', stock.id , getMultiplierForFreeOffer()]);
+            [promotionmasterid, today, '', 'free', stock.id , getMultiplierForFreeOffer()]);
 
         alasql('INSERT INTO promotionfree VALUES(?,?,?,?);',
             [freeid , promotionmasterid , stockId , stockQuant ]);
 
 
     }
+
+    window.location.replace('index.html?inv=1');
 
 
 }

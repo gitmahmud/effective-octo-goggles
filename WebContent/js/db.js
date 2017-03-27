@@ -118,7 +118,7 @@ DB.load = function () {
 
     alasql('DROP TABLE IF EXISTS promotionmaster;');
     alasql('CREATE TABLE promotionmaster(id INT IDENTITY, startdate date , enddate date, type STRING ,' +
-        'obsoletestockid INT , multiplier INT );');
+        'obsoletestockid INT , multiplier INT  );');
 
     alasql('DROP TABLE IF EXISTS promotiondiscount;');
     alasql('CREATE TABLE promotiondiscount(id INT IDENTITY, pmid INT , discountamount INT );');
@@ -132,6 +132,10 @@ DB.load = function () {
 
     alasql('DROP TABLE IF EXISTS promotionfree;');
     alasql('CREATE TABLE promotionfree(id INT IDENTITY, pmid INT , originalstockid INT , quantity INT );');
+
+    alasql('DROP TABLE IF EXISTS customerorder;');
+    alasql('CREATE TABLE customerorder(id INT IDENTITY, type STRING , quantity INT , tid INT ,isbackorder INT );');
+
 
 
 

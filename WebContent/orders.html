@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/bootstrap.css.map" rel="stylesheet" />
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
+
+
+
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+        <div style="font-size: xx-large;" class="text-center" >
+            <label class="label label-primary">Orders</label>
+        </div>
+
+
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+
+    <h2>Regular orders</h2>
+    <table class="table table-striped">
+        <thead>
+        <th>ID</th>
+        <th>Name </th>
+        <th>Type</th>
+        <th>Quantity</th>
+        <th>Order Type</th>
+        <th></th>
+
+        </thead>
+        <tbody id="tbody_orders">
+
+        </tbody>
+
+
+    </table>
+
+
+
+
+
+
+
+
+</div>
+<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
+<script src="js/orders.js"></script>
+
+</body>
+</html>

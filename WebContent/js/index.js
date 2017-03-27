@@ -48,7 +48,7 @@ $('input[name="q3"]').val(q3);
 
 // build sql
 var sql = 'SELECT stock.id, whouse.name, kind.text, item.code, item.maker, item.detail, item.price, stock.balance, \
-item.unit , stock.obsoleteperiod , stock.maxusage , stock.leadtime , stock.avgdailyusage , stock.maxleadtime \
+item.unit , stock.obsoleteperiod , stock.maxusage , stock.leadtime , stock.avgdailyusage , stock.maxleadtime ,stock.isobsolete\
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \
 	JOIN item ON item.id = stock.item \
@@ -135,7 +135,8 @@ function initiateObsoleteNotification() {
     let obsoleteCount = 0;
 
     for (let i = 0; i < stocks.length; i++) {
-        if (stocks[i]["isobsolete"] !== 2) {
+        console.log(stocks[i]);
+        if (stocks[i]["isobsolete"] < 2) {
             let maxLastSaleDate = new Date();
             let currentStockObsoletePeriod = stocks[i]["obsoleteperiod"];
             maxLastSaleDate.setDate(maxLastSaleDate.getDate() - currentStockObsoletePeriod);
@@ -146,11 +147,11 @@ function initiateObsoleteNotification() {
                 obsoleteCount++;
                 alasql('UPDATE stock SET isobsolete=1 WHERE id=?', [stocks[i]["id"]]);
             }
-            // console.log(obsoleteCount, maxLastSaleDate, lastSale);
+            console.log(obsoleteCount, maxLastSaleDate, lastSale);
         }
 
     }
-    // console.log(obsoleteCount);
+    console.log(obsoleteCount);
 
     if (obsoleteCount > 0) {
         $('#obsoleteNotificationId').css('background', 'blue');
@@ -189,7 +190,7 @@ function displayPromotionalProduct() {
     $('#tbody_promotional_list').html(str);
 
     $('tbody > tr').css('cursor', 'pointer').on('click', function () {
-        alert( $(this).attr('data-href'))
+        //alert( $(this).attr('data-href'))
         window.location.replace( $(this).attr('data-href'));
     });
 

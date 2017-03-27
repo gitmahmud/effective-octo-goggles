@@ -37,14 +37,106 @@
 <div class="container" style="margin-left: 10%; margin-right: 10%">
 
     <div id="basicInfo">
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <th>Name</th>
+                <td id="promotion_details_name"></td>
+            </tr>
+            <tr>
+                <th>Details</th>
+                <td id="promotion_details_product_detail"></td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td id="promotion_details_quantity"></td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td id="promotion_details_price"></td>
+            </tr>
+            <tr>
+                <th>Current promotion</th>
+                <th id="promotion_details_current_promotion" class="text-capitalize"></th>
+            </tr>
+
+
+
+            </tbody>
+
+
+        </table>
 
     </div>
     <hr>
-    <div id="saleComparisonChart">
+    <div id="currentPromotionDetail">
+        <h2 class="text-center">Current promotion details </h2>
+        <table class="table" >
+            <tbody>
+            <tr>
+                <th>Promotion start : </th>
+                <td id="promotion_details_promotion_start"></td>
+
+            </tr>
+
+            <tr>
+                <th>Total days : </th>
+                <td id="promotion_details_total_day"></td>
+
+            </tr>
+
+            <tr>
+                <th>Total Forecasted sale : </th>
+                <td id="promotion_details_total_forecasted_sale"></td>
+            </tr>
+            <tr>
+                <th>Total actual sale : </th>
+                <td id="promotion_details_total_actual_sale"></td>
+            </tr>
+
+            <tr>
+                <th>Sale status : </th>
+                <td id="promotion_details_sale_difference"></td>
+            </tr>
+
+
+
+            </tbody>
+
+        </table>
+        <div id="saleComparisonChart">
+
+
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="onPromotionChangeClicked()" style="margin-left:10% ; float: left"><span class="glyphicon glyphicon-pencil"></span> Change promotion</button>
+        <button class="btn btn-danger btn-lg" style="margin-left: 10%">Return to supplier</button>
+        <button class="btn btn-primary btn-lg" onclick="onPromotionCancelClicked()" style="margin-right:10% ; float: right"><span class="glyphicon glyphicon-remove"></span> Cancel promotion</button>
+        <div class="clearfix"></div>
+
+
 
     </div>
-    <hr>
+
     <div id="promotionHistory">
+        <h2 class="text-left">Promotion History</h2>
+        <hr>
+        <table class="table">
+            <thead>
+            <th>Promotion</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th>Total day</th>
+            <th>Sold quantity</th>
+
+            </thead>
+
+            <tbody id="tbody_promotion_history" >
+
+
+            </tbody>
+
+        </table>
 
     </div>
 

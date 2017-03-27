@@ -19,7 +19,7 @@ for(let i = 0 ; i < newObsoleteProducts.length ; i++)
         (memo = "Purchased" or memo = "Initial Stock") and stock = ?', [newObsoleteProducts[i]["id"]])[0]["last_buy"];
 
 }
-var markedObsolete = newObsoleteProducts[0];
+var markedObsolete ;
 
 
 displayNewObsoleteProducts();
@@ -227,6 +227,7 @@ function plotProductTransactionHistoryChart(stockId) {
 function productMarkedAsObsolete() {
 
     $('#modalObsoleteReport').modal('hide');
+    alasql('UPDATE stock SET isobsolete = 2 where id = ?',[markedObsolete.id]);
 
     $('#obsolete_count_stock_id').text(markedObsolete.id);
     $('#obsolete_count_name').text(markedObsolete.code);
