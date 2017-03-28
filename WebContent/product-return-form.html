@@ -2,16 +2,13 @@
 <html>
 <head>
     <script src="lib/jquery.js"></script>
-    <link href="css/bootstrap.css" rel="stylesheet" />
-    <link href="css/bootstrap.css.map" rel="stylesheet" />
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <!--<link href="css/bootstrap.css.map" rel="stylesheet"/>-->
     <script src="lib/bootstrap.js"></script>
     <script src="lib/alasql.js"></script>
     <script src="lib/purl.js"></script>
     <script src="lib/highcharts.js"></script>
     <script src="js/db.js"></script>
-
-
-
     <meta charset="utf-8">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-Control" content="no-cache">
@@ -30,53 +27,31 @@
                     class="icon-bar"></span>
             </button>
             <a class="navbar-brand">COMPANY</a>
-            <ul class="nav navbar-nav">
-                <li><a href="index.html?inv=1">Inventory Management</a></li>
-            </ul>
         </div>
 
 
-
-        <div style="font-size: xx-large;margin-left: 50%"  >
-            <label class="label label-primary">Orders</label>
-        </div>
-
-
-        <!-- /.navbar-collapse -->
     </div>
     <!-- /.container-fluid -->
 </nav>
 
-<div class="container">
+<div class="container" style="margin-left: 10%; margin-right: 10%">
 
-    <h2>Regular orders</h2>
-    <table class="table table-striped">
-        <thead>
-        <th>ID</th>
-        <th>Name </th>
-        <th>Type</th>
-        <th>Quantity</th>
-        <th>Order Type</th>
-        <th></th>
+    <h2 class="text-center">Product Return Form </h2>
 
-        </thead>
-        <tbody id="tbody_orders">
+    <table class="table ">
+        <tbody id="tbody_prf">
+
 
         </tbody>
 
 
     </table>
 
-
-
-
-
-
+    <button class="btn btn-lg btn-warning" onclick="onClickReturn()" style="margin-left: 50%">Return</button>
 
 
 </div>
-<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
-<script src="js/orders.js"></script>
-
+<script src="js/product-return-form.js"></script>
 </body>
+
 </html>

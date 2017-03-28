@@ -4,6 +4,8 @@
 // var reorderParam = $.url().param('q');
 
 
+var statusOption = ['ORDER PLACED', 'SUPPLIER CONFIRMED', 'ORDER RECEIVED', 'PRODUCT SCRUTINIZED'];
+
 var newReorders = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, stock.balance, item.pclass \
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \
@@ -15,11 +17,15 @@ var existingReorders = alasql('SELECT reorderproduct.id , item.code , item.detai
     'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate , ' +
     'reorderproduct.status  ' +
     'from reorderproduct join supplier ON supplier.id = reorderproduct.supplierid ' +
-    'join stock ON stock.id = reorderproduct.stockid join item ON stock.item = item.id');
+    'join stock ON stock.id = reorderproduct.stockid join item ON stock.item = item.id where reorderproduct.status <> ? ',
+    [statusOption[3]]);
 
-var statusOption = ['ORDER PLACED', 'SUPPLIER CONFIRMED', 'ORDER RECEIVED', 'PRODUCT SCRUTINIZED'];
+
 // var statusChangeReorderId = 100;
 var statusChangeProductInfo;
+
+var currentStatusChangedDetails ;
+
 
 displayNewReorders();
 displayExistingReorders();
@@ -191,13 +197,11 @@ function displayNewReorders() {
 
 function displayExistingReorders() {
     let str = '';
-    let bg_existing_tr = ['bg-primary', 'bg-warning', 'bg-success', 'bg-info'];
-
 
     for (let i = 0; i < existingReorders.length; i++) {
 
         let currentProduct = existingReorders[i];
-        let statusIndex = statusOption.indexOf(currentProduct.status);
+        let statusIndex = statusOption.indexOf(currentProduct.status) ;
 
         str += '<tr>' +
             '<td>' + currentProduct.id + '</td>' +
@@ -234,17 +238,19 @@ function productStatusChange() {
         'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate , ' +
         'reorderproduct.status, reorderproduct.orderreceiveddate  ,' +
         'reorderproduct.orderreceivequantity , reorderproduct.receivequantitygood ,  reorderproduct.receivequantitydamaged, ' +
-        'reorderproduct.stockid ' +
+        'reorderproduct.stockid , stock.balance , reorderproduct.supplierid ' +
         'from reorderproduct join supplier ON supplier.id = reorderproduct.supplierid ' +
         'join stock ON stock.id = reorderproduct.stockid join item ON stock.item = item.id where reorderproduct.id = ?', [reorderId])[0];
 
     if (statusOption.indexOf(changedStatus) === 1) {
         alasql('UPDATE reorderproduct SET status = ? where id= ? ', [statusOption[1], reorderId]);
+        window.location.reload(true);
 
     }
     else if (statusOption.indexOf(changedStatus) === 2) {
-        let str = '<label class="label label-default" for="#id_product_arrival_date">Product arrival date </label>';
-        str += '<input type="date" id="id_product_arrival_date" >';
+
+        let str = '<label class="label label-default" for="#id_product_arrival_date" style="font-size: larger">Select product arrival date </label>';
+        str += '<input type="date" id="id_product_arrival_date"  class="form-control input-lg">';
         str += '<span style="display: none" id="modal_product_reorder_id">' + reorderId + '</span>'
 
         $('#datepicker_modal').html(str);
@@ -274,6 +280,8 @@ function productStatusChange() {
     else {
         console.log('');
     }
+
+
 
 }
 
@@ -315,20 +323,10 @@ function checkReceiveProduct() {
     $('#report_percent_good').text((goodQuantity * 100 / totalReceiveQuantity).toFixed(2));
     $('#report_percent_damaged').text((badQuantity * 100 / totalReceiveQuantity).toFixed(2));
     $('#report_supplier').text(reportInfo.supplier);
-    alasql('UPDATE reorderproduct SET orderreceivequantity = ? , receivequantitygood =? , receivequantitydamaged =?' +
-        ' where id = ?', [totalReceiveQuantity, goodQuantity, badQuantity, reportInfo.id]);
-
-    if (badQuantity > 0) {
-        $('#report_add_to_inventory_button').addClass('disabled');
-        $('#report_add_to_inventory_button').attr('data-toggle', "tooltip");
-        $('#report_add_to_inventory_button').attr('data-placement', "top");
-        $('#report_add_to_inventory_button').attr('title', "Please return damaged goods or return the whole order first.");
+    alasql('UPDATE reorderproduct SET orderreceivequantity = ? , receivequantitygood =? , receivequantitydamaged =? , status = ?' +
+        ' where id = ?', [totalReceiveQuantity, goodQuantity, badQuantity,  statusOption[3], reportInfo.id  ]);
 
 
-    }
-    else {
-        $('#report_return_product_damagaed_button').hide();
-    }
 
 
     $('#modalOrderReport').modal('show');
@@ -337,39 +335,73 @@ function checkReceiveProduct() {
 
 
 }
-function returnProductToSupplier() {
+
+
+
+
+
+
+function addToInvenory() {
+
+    statusChangeProductInfo = alasql('SELECT reorderproduct.id , item.code , item.detail , reorderproduct.orderquantity, ' +
+        'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate , ' +
+        'reorderproduct.status, reorderproduct.orderreceiveddate  ,' +
+        'reorderproduct.orderreceivequantity , reorderproduct.receivequantitygood ,  reorderproduct.receivequantitydamaged, ' +
+        'reorderproduct.stockid , stock.balance , reorderproduct.supplierid ' +
+        'from reorderproduct join supplier ON supplier.id = reorderproduct.supplierid ' +
+        'join stock ON stock.id = reorderproduct.stockid join item ON stock.item = item.id where reorderproduct.id = ?', [statusChangeProductInfo.id])[0];
+
+    alasql("UPDATE stock SET balance=? where id=?",
+    [ statusChangeProductInfo.balance + statusChangeProductInfo.receivequantitygood , statusChangeProductInfo.stockid ]);
+
+
+
+    let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+    alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
+        [ transId , statusChangeProductInfo.stockid ,
+            statusChangeProductInfo.orderreceiveddate ,
+            statusChangeProductInfo.receivequantitygood,
+            statusChangeProductInfo.balance + statusChangeProductInfo.receivequantitygood,
+            'Purchased'
+        ]);
+
+    alasql('UPDATE stock SET reorderstatus = 0 where id = ?', [statusChangeProductInfo.stockid]);
+
+
+    let rateId = alasql('SELECT max(id) AS max_id from supplierrating')[0]['max_id'];
+
+    let rating = parseInt($('input[name="supplier_rate"]:checked').val());
+
+    alasql('INSERT INTO supplierrating VALUES(?,?,?)',
+        [rateId , statusChangeProductInfo.supplierid , rating ]);
+
+
     $('#modalOrderReport').modal('hide');
-    $('#product_return_order_id').text('#' + statusChangeProductInfo.id);
-    $('#product_return_product_name').text(statusChangeProductInfo.code);
-    $('#product_return_expected_arrival').text(statusChangeProductInfo.expectedreceivedate);
-    $('#product_return_arrival_date').text(statusChangeProductInfo.orderreceiveddate);
-    $('#product_return_order_quantity').text(statusChangeProductInfo.orderquantity);
-    $('#product_return_received_quantity').text(statusChangeProductInfo.orderreceivequantity);
-    $('#product_return_damaged_quantity').text(statusChangeProductInfo.receivequantitydamaged);
 
+    if(statusChangeProductInfo.receivequantitydamaged >0)
+    {
+        let flag = confirm("This order contains damaged goods . Do you want to return damaged goods to the supplier ? ");
 
-    $('#modalProductReturnForm').modal('show');
+        if(flag)
+        {
+            window.location.replace('product-return-form.html?q1=damage&q2='+statusChangeProductInfo.id);
+        }
+        else
+        {
+            window.location.reload(true);
 
+        }
 
-}
-function productReturnFormCompleted() {
-    $('#modalProductReturnForm').modal('hide');
-
-    if ($('input[name="input_return_type_radio"]:checked').val() === 'damage_return') {
-        $('#modalOrderReport').modal('show');
-        $('#report_return_product_button').addClass('disabled');
-        $('#report_add_to_inventory_button').removeClass('disabled');
+    }
+    else{
+        let flag = confirm("Do you want see current inventory level for this product ?");
+        if(flag){
+            window.open('stock.html?id='+statusChangeProductInfo.stockid);
+        }
+        window.location.reload(true);
 
 
     }
-    else {
-        if (confirm("Do you want to reorder now ?")) {
-            window.location.replace('reorder-form.html?id=' + statusChangeProductInfo.stockid);
-        }
-        else {
-            window.location.replace('reorder.html');
 
-        }
-    }
 
 }

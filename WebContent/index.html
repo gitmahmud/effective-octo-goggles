@@ -1,207 +1,210 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="lib/jquery.js"></script>
-<link href="css/bootstrap.css" rel="stylesheet" />
-<link href="css/bootstrap.css.map" rel="stylesheet" />
-<script src="lib/bootstrap.js"></script>
-<script src="lib/alasql.js"></script>
-<script src="lib/purl.js"></script>
-<script src="lib/highcharts.js"></script>
-<script src="js/db.js"></script>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap.css.map" rel="stylesheet"/>
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
 
 
-
-<meta charset="utf-8">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Cache-Control" content="no-cache">
-<meta name="viewport" content="width=device-width">
-<title>COMPANY</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
 </head>
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed"
-					data-toggle="collapse" data-target="#navbar-collapse">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand">COMPANY</a>
-			</div>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
 
-			<!-- Collect the nav links, forms, and other content for toggling -->
-			<div class="collapse navbar-collapse" id="navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li><a href="index.html">Inventory Management</a></li>
-					<li id="orderId"><a href="orders.html">Order<span class="badge"></span> </a></li>
-					<li id="reorderId" ><a href="reorder.html" >Reorder  <span class="badge">2</span> </a> </li>
-					<li id="obsoleteNotificationId" ><a href="obsolete.html" >Obsolete <span class="badge"></span> </a> </li>
-					<li id="backorderNotificationId" ><a href="reorder.html" >Backorder <span class="badge">2</span> </a> </li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>
-							Settings <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a onclick="window.location.reload(true);"><span
-									class="glyphicon glyphicon-refresh"></span> Reload</a></li>
-							<li><a onclick="DB.init();"><span
-									class="glyphicon glyphicon-repeat"></span> Init DB</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a onclick="DB.remove();"><span
-									class="glyphicon glyphicon-trash"></span> Delete DB</a></li>
-						</ul></li>
-				</ul>
-			</div>
-			<!-- /.navbar-collapse -->
-		</div>
-		<!-- /.container-fluid -->
-	</nav>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="index.html?inv=1">Inventory Management</a></li>
+                <li id="orderId"><a href="orders.html">Order<span class="badge"></span> </a></li>
+                <li><button id="reorderId" class="btn btn-default btn-lg" onclick="onClickReorderNotification()">Reorder <span class="badge" id="reorderBadge">0</span> </button></li>
+                <li><button id="obsoleteNotificationId" class="btn btn-default btn-lg" onclick="onClickObsoleteNotification()">Obsolete <span class="badge" id="obsoleteBadge"></span> </button></li>
 
-	<div class="container">
-		<form action="index.html" class="form-inline text-center">
-			<div class="form-group text-left" style="margin-right: 10%">
-				<label>Today : </label>
-				<input type="date" id="input_today" class="form-control">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown"><a href="#" class="dropdown-toggle"
+                                        data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>
+                    Settings <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a onclick="window.location.reload(true);"><span
+                                class="glyphicon glyphicon-refresh"></span> Reload</a></li>
+                        <li><a onclick="DB.init();"><span
+                                class="glyphicon glyphicon-repeat"></span> Init DB</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a onclick="DB.remove();"><span
+                                class="glyphicon glyphicon-trash"></span> Delete DB</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
 
-			</div>
-			<div class="form-group" style="display: none">
-				<label>Warehouse</label> <select name="q1" class="form-control">
-					<option value="0">All</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label>Classification</label> <select name="q2" class="form-control">
-					<option value="0">All</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label>Code</label> <input name="q3" type="text"
-					class="form-control" placeholder="Prefix Search">
-			</div>
-			<button type="submit" class="btn btn-primary">
-				<span class="glyphicon glyphicon-search"></span> Search
-			</button>
-		</form>
-		<hr>
+<div class="container">
+    <form class="form-inline text-center">
+        <div class="form-group text-left" style="margin-right: 10%">
+            <label>Today : </label>
+            <input type="date" id="input_today" class="form-control">
 
-		<div class="clearfix" style="margin: 10px 0;">
-			<a href="stock-form.html" class="btn btn-sm btn-success pull-right"><span
-				class="glyphicon glyphicon-plus"></span> New</a>
-		</div>
+        </div>
+        <div class="form-group" style="display: none">
+            <label>Warehouse</label> <select name="q1" class="form-control">
+            <option value="0">All</option>
+        </select>
+        </div>
+        <div class="form-group">
+            <label>Classification</label> <select name="q2" class="form-control">
+            <option value="0">All</option>
+        </select>
+        </div>
+        <div class="form-group">
+            <label>Code</label> <input name="q3" type="text"
+                                       class="form-control" placeholder="Prefix Search">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="onSearchClicked()">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+    </form>
+    <hr>
 
-		<table class="table table-hover table-condensed table-bordered table-striped">
-			<thead>
-				<tr>
-					<th>Warehouse</th>
-					<th>Classification</th>
-					<th>Code</th>
-					<th>Maker</th>
-					<th>Detail</th>
-					<th>Price</th>
-					<th>In Stock</th>
-					<th>Unit</th>
-				</tr>
-			</thead>
-			<tbody id="tbody-stocks"></tbody>
-		</table>
-
-		<div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
-			<!-- Default panel contents -->
-			<div class="panel-heading">Promotional products</div>
-			<div class="panel-body">
-				<table class="table table-hover table-bordered table-striped table-condensed">
-					<thead>
-					<th>Name</th>
-					<th>Detail</th>
-					<th>Quantity</th>
-					<th>Current promotion</th>
-					<th>Promotion start</th>
-
-					</thead>
-					<tbody id="tbody_promotional_list">
+    <!--<div class="clearfix" style="margin: 10px 0;">-->
+        <!--<a href="stock-form.html" class="btn btn-sm btn-success pull-right"><span-->
+                <!--class="glyphicon glyphicon-plus"></span> New</a>-->
+    <!--</div>-->
 
 
-					</tbody>
-
-				</table>
+    <div class="panel panel-default" style="margin-bottom: 20px;margin-top: 20px">
+        <!-- Default panel contents -->
+        <div class="panel-heading">All products</div>
+        <div class="panel-body">
+            <div id="allProductInfo" style="margin:2%"></div>
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <!--<th>Warehouse</th>-->
+                    <th>Code</th>
+                    <th>Classification</th>
+                    <th>Maker</th>
+                    <th>Detail</th>
+                    <th>Price</th>
+                    <th>In Stock</th>
+                    <th>Unit</th>
+                </tr>
+                </thead>
+                <tbody id="tbody-stocks"></tbody>
+            </table>
+        </div>
+    </div>
 
 
 
+    <div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Promotional products</div>
+        <div class="panel-body">
+            <table class="table table-hover table-bordered table-striped table-condensed">
+                <thead>
+                <th>Name</th>
+                <th>Detail</th>
+                <th>Quantity</th>
+                <th>Current promotion</th>
+                <th>Promotion start</th>
+
+                </thead>
+                <tbody id="tbody_promotional_list">
 
 
+                </tbody>
 
-			</div>
-		</div>
-
-
+            </table>
 
 
-
-	</div>
-	<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
-	<script src="js/index.js"></script>
-	<script>
+        </div>
+    </div>
 
 
-//        Highcharts.chart('chart_container', {
-//
-//            title: {
-//                text: 'Solar Employment Growth by Sector, 2010-2016'
-//            },
-//
-//            subtitle: {
-//                text: 'Source: thesolarfoundation.com'
-//            },
-//			xAxis:{
-//                type: 'datetime'
-//			},
-//
-//            yAxis: {
-//                title: {
-//                    text: 'Number of Employees'
-//                }
-//            },
-//            legend: {
-//                layout: 'vertical',
-//                align: 'right',
-//                verticalAlign: 'middle'
-//            },
-//
-////            plotOptions: {
-////                series: {
-////                    //pointStart: 2010
-////                    //type: 'datetime',
-////                    categories: ['2017-02-10', '2017-02-11', '2017-02-12',
-////                        '2017-02-13','2017-02-14' , '2017-02-15' ,
-////                        '2017-02-16' , '2017-02-17'
-////                    ]
-////                }
-////            },
-//
-//            series: [{
-//                name: 'Installation',
-//                data: [[Date.UTC(2012, 01, 01), 43934], [Date.UTC(2012, 01, 02), 52503],
-//                    [Date.UTC(2012, 01, 03), 57177], [Date.UTC(2012, 01, 07), 69658]
-//                ]
-//            },{
-//                name: 'Deployment',
-//				data : [
-//				    [Date.UTC(2012,01,01) ,33934],
-//					[Date.UTC(2012,01,04) ,57177 ],
-//					[Date.UTC(2012,01,08) ,87177 ]
-//
-//
-//				]
-//
-//			}
-//            ]
-//
-//        });
+</div>
+<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
+<script src="js/index.js"></script>
+<script>
 
-	</script>
+
+    //        Highcharts.chart('chart_container', {
+    //
+    //            title: {
+    //                text: 'Solar Employment Growth by Sector, 2010-2016'
+    //            },
+    //
+    //            subtitle: {
+    //                text: 'Source: thesolarfoundation.com'
+    //            },
+    //			xAxis:{
+    //                type: 'datetime'
+    //			},
+    //
+    //            yAxis: {
+    //                title: {
+    //                    text: 'Number of Employees'
+    //                }
+    //            },
+    //            legend: {
+    //                layout: 'vertical',
+    //                align: 'right',
+    //                verticalAlign: 'middle'
+    //            },
+    //
+    ////            plotOptions: {
+    ////                series: {
+    ////                    //pointStart: 2010
+    ////                    //type: 'datetime',
+    ////                    categories: ['2017-02-10', '2017-02-11', '2017-02-12',
+    ////                        '2017-02-13','2017-02-14' , '2017-02-15' ,
+    ////                        '2017-02-16' , '2017-02-17'
+    ////                    ]
+    ////                }
+    ////            },
+    //
+    //            series: [{
+    //                name: 'Installation',
+    //                data: [[Date.UTC(2012, 01, 01), 43934], [Date.UTC(2012, 01, 02), 52503],
+    //                    [Date.UTC(2012, 01, 03), 57177], [Date.UTC(2012, 01, 07), 69658]
+    //                ]
+    //            },{
+    //                name: 'Deployment',
+    //				data : [
+    //				    [Date.UTC(2012,01,01) ,33934],
+    //					[Date.UTC(2012,01,04) ,57177 ],
+    //					[Date.UTC(2012,01,08) ,87177 ]
+    //
+    //
+    //				]
+    //
+    //			}
+    //            ]
+    //
+    //        });
+
+</script>
 </body>
 </html>

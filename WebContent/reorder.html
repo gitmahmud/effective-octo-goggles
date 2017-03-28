@@ -27,6 +27,13 @@
             </button>
             <a class="navbar-brand">COMPANY</a>
         </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="index.html?inv=1">Inventory Management</a></li>
+            </ul>
+
+        </div>
+
 
 
     </div>
@@ -257,20 +264,20 @@
                             <td id="report_supplier"></td>
                         </tr>
 
-                        <!--<tr>-->
-                            <!--<th>Rate Supplier :</th>-->
-                            <!--<td><input name="supplier_rate" type="radio" value="1"-->
-                                       <!--style="margin-right: 10px;margin-left: 20px">1-->
-                                <!--<input name="supplier_rate" type="radio" value="2"-->
-                                       <!--style="margin-right: 10px;margin-left: 20px">2-->
-                                <!--<input name="supplier_rate" type="radio" value="3"-->
-                                       <!--style="margin-right: 10px;margin-left: 20px">3-->
-                                <!--<input name="supplier_rate" type="radio" value="4"-->
-                                       <!--style="margin-right: 10px;margin-left: 20px">4-->
-                                <!--<input name="supplier_rate" type="radio" value="5"-->
-                                       <!--style="margin-right: 10px;margin-left: 20px">5-->
-                            <!--</td>-->
-                        <!--</tr>-->
+                        <tr>
+                            <th>Rate Supplier :</th>
+                            <td><input name="supplier_rate" type="radio" value="1"
+                                       style="margin-right: 10px;margin-left: 20px">1
+                                <input name="supplier_rate" type="radio" value="2"
+                                       style="margin-right: 10px;margin-left: 20px">2
+                                <input name="supplier_rate" type="radio" value="3"
+                                       style="margin-right: 10px;margin-left: 20px">3
+                                <input name="supplier_rate" type="radio" value="4"
+                                       style="margin-right: 10px;margin-left: 20px">4
+                                <input name="supplier_rate" type="radio" value="5"
+                                       style="margin-right: 10px;margin-left: 20px">5
+                            </td>
+                        </tr>
 
 
                         </tbody>
@@ -282,17 +289,10 @@
                 </div>
                 <div class="modal-footer">
 
-                    <button type="button" class="btn btn-danger text-center " style="float: left"
-                            id="report_return_product_button" onclick="returnProductToSupplier()">Return Order
-                    </button>
-
-                    <button type="button" class="btn btn-warning text-center " style="margin-left: 10%"
-                            id="report_return_product_damagaed_button" onclick="">Return Damaged Goods
-                    </button>
                     <button type="button" class="btn btn-success text-center " style="float: right"
-                            id="report_add_to_inventory_button" onclick="">Add to inventory
+                            id="report_add_to_inventory_button" onclick="addToInvenory()">Add to inventory
                     </button>
-                    <div class="clearfix"></div>
+                    <span class="clearfix"></span>
 
                 </div>
             </div>
@@ -302,93 +302,7 @@
 
     </div>
 
-    <div id="modalProductReturnForm" class="modal fade" role="dialog">
-        <div class="modal-dialog">
 
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title text-primary">Product return form</h4>
-                </div>
-                <div class="modal-body">
-                    <!--<b>Return type: </b>-->
-                    <!--<input  name="input_return_type_radio" type="radio" value="damage_return" style="margin-left: 30px;margin-right: 20px">Return damaged-->
-                    <!--<input name="input_return_type_radio" type="radio" value="all_return" style="margin-left: 20px;">Return All-->
-                    <table class="table ">
-                        <tbody>
-                        <tr>
-                            <th>Order ID :#</th>
-                            <td id="product_return_order_id"></td>
-
-                        </tr>
-                        <tr>
-                            <th>Product Name :</th>
-                            <td id="product_return_product_name"></td>
-                        </tr>
-                        <tr>
-                            <th>Expected arrival date :</th>
-                            <td id="product_return_expected_arrival"></td>
-                        </tr>
-
-                        <tr>
-                            <th>Arrival date :</th>
-                            <td id="product_return_arrival_date"></td>
-                        </tr>
-                        <tr>
-                            <th>Order quantity :</th>
-                            <td id="product_return_order_quantity"></td>
-                        </tr>
-                        <tr>
-                            <th>Received quantity :</th>
-                            <td id="product_return_received_quantity"></td>
-                        </tr>
-                        <tr>
-                            <th>Damaged quantity (if any) :</th>
-                            <td id="product_return_damaged_quantity"></td>
-                        </tr>
-                        <tr>
-                            <th>Reason for return :</th>
-                            <td><textarea  class="form-control" rows="6"  id="product_return_reason" ></textarea></td>
-                        </tr>
-                        <!--<tr>-->
-                            <!--<th>Attached images :</th>-->
-                            <!--<td><input type="image" id="product_return_image"></td>-->
-                        <!--</tr>-->
-                        <tr>
-                            <th>Opened Status :</th>
-                            <td><select class="form-control" style="width: 130px;" id="product_return_open_status">
-                                <option>Unopened</option>
-                                <option>Opened</option>
-                            </select></td>
-                        </tr>
-                        <tr>
-                            <th>Products to be returned : </th>
-                            <td id="product_return_returning_quantity"></td>
-
-                        </tr>
-
-
-                        </tbody>
-
-
-                    </table>
-
-
-                </div>
-                <div class="modal-footer">
-
-
-                    <button type="button" class="btn btn-success text-center " id="product_return_form_button" onclick="productReturnFormCompleted()">Done</button>
-
-
-                </div>
-            </div>
-
-        </div>
-
-
-    </div>
 
 
 </div>

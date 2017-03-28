@@ -1,22 +1,21 @@
 var whouseId = parseInt($.url().param('inv'));
 
-if(localStorage.getItem("today") === null)
-{
-    localStorage.setItem("today" , getDatefromMS(new Date()));
+if (localStorage.getItem("today") === null) {
+    localStorage.setItem("today", getDatefromMS(new Date()));
     $('#input_today').val(getDatefromMS(new Date()));
 }
-else
-{
+else {
     let d = localStorage.getItem("today");
     $('#input_today').val(d);
 
 }
 $('#input_today').change(function () {
-    localStorage.setItem("today" ,$('#input_today').val() );
+    localStorage.setItem("today", $('#input_today').val());
 
 });
 
 
+var obsoleteCount;
 
 
 // create search box
@@ -67,9 +66,9 @@ var tbody = $('#tbody-stocks');
 for (var i = 0; i < stocks.length; i++) {
     var stock = stocks[i];
     var tr = $('<tr data-href="stock.html?id=' + stock.id + '"></tr>');
-    tr.append('<td>' + stock.name + '</td>');
-    tr.append('<td>' + stock.text + '</td>');
+    // tr.append('<td>' + stock.name + '</td>');
     tr.append('<td>' + stock.code + '</td>');
+    tr.append('<td>' + stock.text + '</td>');
     tr.append('<td>' + stock.maker + '</td>');
     tr.append('<td>' + stock.detail + '</td>');
     tr.append('<td style="text-align: right;">' + numberWithCommas(stock.price) + '</td>');
@@ -78,14 +77,12 @@ for (var i = 0; i < stocks.length; i++) {
     tr.appendTo(tbody);
 }
 
+
+
 // click event
 $('tbody > tr').css('cursor', 'pointer').on('click', function () {
     window.location = $(this).attr('data-href');
 });
-
-
-
-
 
 
 //reorder notification
@@ -114,17 +111,23 @@ function initiateReorderNotification() {
 
     }
 
+    console.log(reorderCount+' r');
     if (reorderCount > 0) {
-        // reorderLink = reorderLink.substr(0, reorderLink.length - 1);
-        $('#reorderId').css('background', 'green');
-        // $('#reorderId').children(':first-child').attr('href',reorderLink);
-        $('#reorderId').children(':first-child').children(':last-child').text(reorderCount);
+
+
+        $('#reorderId').removeClass('btn-default');
+        $('#reorderId').addClass('btn-primary');
+
+        $('#reorderBadge').text(reorderCount);
     }
     else {
         // reorderLink = reorderLink.substr(0, reorderLink.length - 3);
-        $('#reorderId').css('background', '');
+        // $('#reorderId').css('background', '');
         // $('#reorderId').children(':first-child').attr('href',reorderLink);
-        $('#reorderId').children(':first-child').children(':last-child').text('');
+        $('#reorderId').addClass('btn-default');
+        $('#reorderId').removeClass('btn-primary');
+
+        $('#reorderBadge').text('');
 
     }
 
@@ -132,7 +135,7 @@ function initiateReorderNotification() {
 }
 
 function initiateObsoleteNotification() {
-    let obsoleteCount = 0;
+    obsoleteCount = 0;
 
     for (let i = 0; i < stocks.length; i++) {
         console.log(stocks[i]);
@@ -154,17 +157,26 @@ function initiateObsoleteNotification() {
     console.log(obsoleteCount);
 
     if (obsoleteCount > 0) {
-        $('#obsoleteNotificationId').css('background', 'blue');
-        $('#obsoleteNotificationId').children(':first-child').children(':last-child').text(obsoleteCount);
+
+        $('#obsoleteNotificationId').removeClass('btn-default');
+        $('#obsoleteNotificationId').addClass('btn-danger');
+
     }
     else {
-        // reorderLink = reorderLink.substr(0, reorderLink.length - 3);
-        $('#obsoleteNotificationId').css('background', '');
-        // $('#reorderId').children(':first-child').attr('href',reorderLink);
-        $('#obsoleteNotificationId').children(':first-child').children(':last-child').text('');
+        $('#obsoleteNotificationId').removeClass('btn-danger');
+        $('#obsoleteNotificationId').addClass('btn-default');
 
 
     }
+
+
+    let str = '<span class="text-center bg-primary" style="font-size: larger;font-weight: bold">Total product : '
+        + stocks.length + '</span>'+
+        '<span class="text-center bg-warning" style="font-size: larger;font-weight: bold;margin-left: 5%">Obsolete product : '
+        + obsoleteCount + '</span>';
+
+
+    $('#allProductInfo').html(str);
 
 
 }
@@ -177,13 +189,13 @@ function displayPromotionalProduct() {
             // console.log(s.id,currentPromotion.obsoletestockid);
             return s.id === currentPromotion.obsoletestockid;
         });
-        let rowColor =  currentPromotion.type === 'discount' ? 'primary' : (currentPromotion.type === 'bundle' ? 'success' : 'info');
-        str += '<tr  class="'+ rowColor+'" data-href="promotion.html?id=' + stock.id + '">'+
-                '<td>'+ stock.code +'</td>'+
-                '<td>'+ stock.detail +'</td>'+
-                '<td>'+ stock.balance +'</td>'+
-                '<td class="text-capitalize">'+ currentPromotion.type +'</td>'+
-                '<td>'+ currentPromotion.startdate +'</td>'+
+        let rowColor = currentPromotion.type === 'discount' ? 'primary' : (currentPromotion.type === 'bundle' ? 'success' : 'info');
+        str += '<tr  class="' + rowColor + '" data-href="promotion.html?id=' + stock.id + '">' +
+            '<td>' + stock.code + '</td>' +
+            '<td>' + stock.detail + '</td>' +
+            '<td>' + stock.balance + '</td>' +
+            '<td class="text-capitalize">' + currentPromotion.type + '</td>' +
+            '<td>' + currentPromotion.startdate + '</td>' +
             '</tr>';
     });
 
@@ -191,11 +203,8 @@ function displayPromotionalProduct() {
 
     $('tbody > tr').css('cursor', 'pointer').on('click', function () {
         //alert( $(this).attr('data-href'))
-        window.location.replace( $(this).attr('data-href'));
+        window.location.replace($(this).attr('data-href'));
     });
-
-
-
 
 
 }
@@ -204,6 +213,23 @@ function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
     return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
 
+
+}
+function onSearchClicked() {
+    let q1val = $('select[name="q1"]').val();
+    let q2val = $('select[name="q2"]').val();
+    let q3val = $('input[name="q3"]').val();
+
+    window.location.replace('index.html?inv=1&q1=' + q1val + '&q2=' + q2val + '&q3=' + q3val);
+
+
+}
+function onClickReorderNotification() {
+
+    window.location.replace('reorder.html');
+}
+function onClickObsoleteNotification() {
+    window.location.replace('obsolete.html');
 
 }
 
