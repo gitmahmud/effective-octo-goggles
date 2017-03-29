@@ -175,8 +175,16 @@ function displaySelectedBundleItems() {
 
 
     $('#tbody_bundle_items').html(str);
+
     setTotalPriceBundle();
-    plotSaleForecastChart('sale_forecast_bundle' , getMultiplerForBundleOffer());
+    if(bundleProducts.length >1) {
+        plotSaleForecastChart('sale_forecast_bundle', getMultiplerForBundleOffer());
+    }
+    else
+    {
+        $('#sale_forecast_bundle').html('');
+
+    }
 
 
     $("input[id^='bundle_input_quantity_']").unbind('keyup');
@@ -474,8 +482,16 @@ function updateBundleTypeGuideLink() {
 }
 
 function onBundleItemDeleteClicked() {
-    console.log($(this));
+    let arr = $(this).attr('id').split('_');
+    let stockid = parseInt(arr[arr.length -1]);
 
+    let deleteIndex = bundleProducts.findIndex(function (bundleProduct) {
+        return stockid === bundleProduct['stockId'];
+    });
+
+    bundleProducts.splice(deleteIndex,1);
+
+    displaySelectedBundleItems();
 
 }
 

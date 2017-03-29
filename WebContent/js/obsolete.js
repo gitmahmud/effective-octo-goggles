@@ -1,8 +1,10 @@
 /**
  * Created by rahman_ma-pc on 3/21/2017.
  */
+var today = localStorage.getItem('today');
+
 var newObsoleteProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
-    stock.balance, item.pclass, stock.obsoleteperiod \
+    stock.balance, item.pclass, stock.obsoleteperiod ,item.id AS itemid \
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \
 	JOIN item ON item.id = stock.item \
@@ -123,6 +125,7 @@ function displayNewObsoleteProducts() {
         let currentProduct = newObsoleteProducts[i];
 
         str += '<tr>'+
+            '<td><img style="width: 150px;" src="img/'+ currentProduct.itemid +'.jpg"</td>'+
                 '<td>'+ currentProduct.code +'</td>'+
                 '<td>'+ currentProduct.maker+'</td>'+
                 '<td>'+ currentProduct.detail+'</td>'+
@@ -215,7 +218,7 @@ function plotProductTransactionHistoryChart(stockId) {
             }
         },
         legend: {
-            enabled: false
+            enabled: true
         },
         tooltip: {
             pointFormat: 'Quantity: <b>{point.y}</b> .'
@@ -233,49 +236,50 @@ function productMarkedAsObsolete() {
     $('#obsolete_count_name').text(markedObsolete.code);
     $('#obsolete_count_maker').text(markedObsolete.maker);
     $('#obsolete_count_detail').text(markedObsolete.detail);
+    $('#obsolete_count_total_expected').text(markedObsolete.balance);
+    $('#obsolete_count_good_qty').text(markedObsolete.balance);
 
 
     $('#modalObsoleteProductCount').modal('show');
 
 
-    $('#obsolete_count_damaged_qty').keyup(function () {
-        if($(this).val() > 0)
-        {
-            $('#add_garage_sale_button').css('display' , 'block');
-            $('#add_garage_sale_button').unbind('click');
-            $('#add_garage_sale_button').on('click' , addToGarageButtonClicked );
+    $('#obsolete_count_damaged_qty').unbind('keyup');
 
+    $('#obsolete_count_damaged_qty').keyup(function () {
+        if(parseInt($(this).val()) >= 0)
+        {
+            let badQty =parseInt($(this).val());
+            $('#obsolete_count_good_qty').text(markedObsolete.balance - badQty);
 
         }
         else{
+            $(this).val(0);
+            $('#obsolete_count_good_qty').text(markedObsolete.balance);
+
             alert('Negative values are not valid here.');
         }
 
+        if(parseInt($(this).val()) >0 ){
+            $('#add_garage_sale_button').css('display' , 'block');
+            $('#add_garage_sale_button').unbind('click');
+            $('#add_garage_sale_button').on('click' , addToGarageButtonClicked );
+        }
+        else
+        {
+            $('#add_garage_sale_button').css('display' , 'none');
+
+        }
+
     });
-
-
-
-
-
 
 
 }
 function productCountDone() {
 
 
-    let goodQty = parseInt($('#obsolete_count_good_qty').val());
-    let damagedQty = parseInt($('#obsolete_count_damaged_qty').val());
+    let goodQty = parseInt($('#obsolete_count_good_qty').text());
 
-    //lost quant
-
-
-    if(damagedQty > 0 ) {
-        let transId = alasql('SELECT MAX(id)+1 AS max_id from trans')[0]['max_id'];
-        alasql('INSERT INTO trans VALUES(?,?,?,?,?,?);', [transId, markedObsolete.id, getDatefromMS(new Date()),
-            damagedQty, goodQty, 'Garage Sale']);
-    }
-
-    alasql('UPDATE stock SET isobsolete = 2 and balance=? where id = ?',[goodQty , markedObsolete.id]);
+    console.log(goodQty);
 
     $('#modalObsoleteProductCount').modal('hide');
     $('#button_remind_later').hide();
@@ -283,12 +287,91 @@ function productCountDone() {
 
     $('#button_obsolete_report_return_supplier').show();
     $('#button_obsolete_report_create_promotion').show();
+    $('#obsolete_report_quantity').html('<b>'+markedObsolete.balance+'</b>');
+    plotProductTransactionHistoryChart(markedObsolete.id);
+
+
+
 
 
     $('#modalObsoleteReport').modal('show');
 
 
 }
+
+
+
+function addToGarageButtonClicked(){
+    $('#add_garage_sale_button').css('display' , 'none');
+    $('#damage_garage_sale').html('<div class="bg-success"><span class="glyphicon glyphicon-ok"> ' +$('#obsolete_count_damaged_qty').val()+' damaged inventory has been added to garagesale</div>');
+
+    let damagedQty = parseInt($('#obsolete_count_damaged_qty').val());
+
+    if(damagedQty > 0 ) {
+        let gId = alasql('SELECT max(id) AS max_id from garagesale')[0]['max_id'];
+        gId = gId === undefined ? 1 : gId;
+
+        alasql('INSERT INTO garagesale VALUES(?,?,?,?,?);',[ gId , markedObsolete.id , damagedQty , today , 0 ]);
+        let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+        alasql("INSERT INTO trans VALUES(?,?,?,?,?,?);",[ transId , markedObsolete.id , today , damagedQty , markedObsolete.balance - damagedQty , 'Added to garage sale'  ]);
+
+        alasql('UPDATE stock SET balance=? where id=?',[markedObsolete.balance - damagedQty , markedObsolete.id]);
+
+        markedObsolete.balance = markedObsolete.balance - damagedQty;
+
+
+
+    }
+
+
+}
+
+function onClickRemindLater(){
+    $('#modalObsoleteReport').modal('hide');
+
+    $('#modalRemindLater').modal('show');
+
+
+
+
+
+}
+function onClickRemindLaterDone() {
+    let totalDays = parseInt($('#laterRemindDays').val());
+    let d = Math.round(( getMSFromDate(today) - getMSFromDate(markedObsolete['last_sale_date']) ) / (24*3600*1000)) +totalDays ;
+
+
+    console.log(d);
+    alasql('UPDATE stock SET obsoleteperiod = ? where id=?',[ d , markedObsolete.id]);
+    alasql('UPDATE stock SET isobsolete=0 WHERE id=?', [ markedObsolete.id ]);
+    console.log(markedObsolete);
+
+    $('#modalRemindLater').modal('hide');
+
+    window.location.reload(true);
+
+
+
+
+
+
+}
+
+
+function getDatefromMS(currentDate) {
+    currentDate = new Date(currentDate);
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+
+
+}
+function getMSFromDate(currentDate) {
+    let arr = currentDate.split('-');
+    let d = Date.UTC(parseInt(arr[0]), parseInt(arr[1]) - 1, parseInt(arr[2]));
+
+    return d;
+
+}
+
 
 function loadCreatePromotion() {
     $('#modalObsoleteReport').modal('hide');
@@ -298,16 +381,8 @@ function loadCreatePromotion() {
 
 }
 
-function addToGarageButtonClicked(){
-    $('#add_garage_sale_button').css('display' , 'none');
-    $('#damage_garage_sale').html('<div class="bg-success"><span class="glyphicon glyphicon-ok"> ' +$('#obsolete_count_damaged_qty').val()+' damaged inventory has been added to garagesale</div>');
+function onClickReturnToSupplier() {
 
-}
-
-
-function getDatefromMS(currentDate) {
-    currentDate = new Date(currentDate);
-    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
-
+    window.location.replace('product-return-form.html?q1=obsolete&q2='+markedObsolete.id);
 
 }

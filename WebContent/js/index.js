@@ -14,6 +14,7 @@ $('#input_today').change(function () {
 
 });
 
+var today = localStorage.getItem("today");
 
 var obsoleteCount;
 
@@ -47,7 +48,8 @@ $('input[name="q3"]').val(q3);
 
 // build sql
 var sql = 'SELECT stock.id, whouse.name, kind.text, item.code, item.maker, item.detail, item.price, stock.balance, \
-item.unit , stock.obsoleteperiod , stock.maxusage , stock.leadtime , stock.avgdailyusage , stock.maxleadtime ,stock.isobsolete\
+item.unit , stock.obsoleteperiod , stock.maxusage , stock.leadtime , stock.avgdailyusage , stock.maxleadtime ,stock.isobsolete,\
+    stock.reorderstatus\
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \
 	JOIN item ON item.id = stock.item \
@@ -62,48 +64,30 @@ sql += q2 ? 'AND kind.id = ' + q2 + ' ' : '';
 var stocks = alasql(sql, ['%' + q3 + '%']);
 
 // build html table
-var tbody = $('#tbody-stocks');
-for (var i = 0; i < stocks.length; i++) {
-    var stock = stocks[i];
-    var tr = $('<tr data-href="stock.html?id=' + stock.id + '"></tr>');
-    // tr.append('<td>' + stock.name + '</td>');
-    tr.append('<td>' + stock.code + '</td>');
-    tr.append('<td>' + stock.text + '</td>');
-    tr.append('<td>' + stock.maker + '</td>');
-    tr.append('<td>' + stock.detail + '</td>');
-    tr.append('<td style="text-align: right;">' + numberWithCommas(stock.price) + '</td>');
-    tr.append('<td style="text-align: right;">' + stock.balance + '</td>');
-    tr.append('<td>' + stock.unit + '</td>');
-    tr.appendTo(tbody);
-}
 
-
-
-// click event
-$('tbody > tr').css('cursor', 'pointer').on('click', function () {
-    window.location = $(this).attr('data-href');
-});
 
 
 //reorder notification
 initiateReorderNotification();
 initiateObsoleteNotification();
 displayPromotionalProduct();
+displayAllProducts();
 
 function initiateReorderNotification() {
     let reorderCount = 0;
     // let reorderLink='reorder.html?q=';
     for (let i = 0; i < stocks.length; i++) {
-        if (stocks[i]["isobsolete"] !== 2) {
+        if (stocks[i]["isobsolete"] < 2) {
             let currentStockValue = stocks[i]["balance"];
             let safetyStock = stocks[i]["maxusage"] * stocks[i]["maxleadtime"] - stocks[i]["avgdailyusage"] * stocks[i]["leadtime"];
             // console.log('dafety ' + safetyStock);
             let reorderQuantity = stocks[i]["leadtime"] * stocks[i]["avgdailyusage"] + safetyStock;
 
             // console.log('reorder ' + reorderQuantity);
-            if (currentStockValue <= reorderQuantity) {
+            if (currentStockValue <= reorderQuantity && stocks[i]['reorderstatus'] !== 2 ) {
                 reorderCount++;
                 // reorderLink+=stocks[i]["id"]+','
+                // console.log(currentStockValue,reorderQuantity ,stocks[i]['id'], stocks[i]['reorderstatus'],stocks[i]);
                 alasql('UPDATE stock SET reorderstatus=1 WHERE id=?', [stocks[i]["id"]]);
 
             }
@@ -138,9 +122,10 @@ function initiateObsoleteNotification() {
     obsoleteCount = 0;
 
     for (let i = 0; i < stocks.length; i++) {
-        console.log(stocks[i]);
+       // console.log(stocks[i]);
         if (stocks[i]["isobsolete"] < 2) {
-            let maxLastSaleDate = new Date();
+
+            let maxLastSaleDate = new Date(getMSFromDate(today));
             let currentStockObsoletePeriod = stocks[i]["obsoleteperiod"];
             maxLastSaleDate.setDate(maxLastSaleDate.getDate() - currentStockObsoletePeriod);
             maxLastSaleDate = getDatefromMS(maxLastSaleDate);
@@ -150,7 +135,7 @@ function initiateObsoleteNotification() {
                 obsoleteCount++;
                 alasql('UPDATE stock SET isobsolete=1 WHERE id=?', [stocks[i]["id"]]);
             }
-            console.log(obsoleteCount, maxLastSaleDate, lastSale);
+            console.log(stocks[i]['id'] ,obsoleteCount, maxLastSaleDate, lastSale , currentStockObsoletePeriod);
         }
 
     }
@@ -160,35 +145,45 @@ function initiateObsoleteNotification() {
 
         $('#obsoleteNotificationId').removeClass('btn-default');
         $('#obsoleteNotificationId').addClass('btn-danger');
+        $('#obsoleteBadge').text(obsoleteCount);
 
     }
     else {
         $('#obsoleteNotificationId').removeClass('btn-danger');
         $('#obsoleteNotificationId').addClass('btn-default');
+        $('#obsoleteBadge').text('');
 
 
     }
-
-
-    let str = '<span class="text-center bg-primary" style="font-size: larger;font-weight: bold">Total product : '
-        + stocks.length + '</span>'+
-        '<span class="text-center bg-warning" style="font-size: larger;font-weight: bold;margin-left: 5%">Obsolete product : '
-        + obsoleteCount + '</span>';
-
-
-    $('#allProductInfo').html(str);
-
 
 }
 function displayPromotionalProduct() {
     let currentPromotions = alasql("SELECT * from promotionmaster where enddate = ''");
     let str = '';
+    let totalDiscount = 0;
+    let totalBundle = 0;
+    let totalFree = 0;
+
 
     currentPromotions.forEach(function (currentPromotion) {
         let stock = stocks.find(function (s) {
             // console.log(s.id,currentPromotion.obsoletestockid);
             return s.id === currentPromotion.obsoletestockid;
         });
+
+        if(currentPromotion.type === 'discount')
+        {
+            totalDiscount +=1;
+        }
+        if(currentPromotion.type === 'bundle')
+        {
+            totalBundle +=1;
+        }
+        if(currentPromotion.type === 'free')
+        {
+            totalFree +=1;
+        }
+
         let rowColor = currentPromotion.type === 'discount' ? 'primary' : (currentPromotion.type === 'bundle' ? 'success' : 'info');
         str += '<tr  class="' + rowColor + '" data-href="promotion.html?id=' + stock.id + '">' +
             '<td>' + stock.code + '</td>' +
@@ -201,6 +196,11 @@ function displayPromotionalProduct() {
 
     $('#tbody_promotional_list').html(str);
 
+    $('#totalDiscountProduct').text(totalDiscount);
+    $('#totalBundleProduct').text(totalBundle);
+    $('#totalFreeProduct').text(totalFree);
+
+
     $('tbody > tr').css('cursor', 'pointer').on('click', function () {
         //alert( $(this).attr('data-href'))
         window.location.replace($(this).attr('data-href'));
@@ -208,6 +208,63 @@ function displayPromotionalProduct() {
 
 
 }
+function displayAllProducts() {
+
+    let currentObsolete = alasql('SELECT * from stock where isobsolete>=2');
+    let currentReorder = alasql('SELECT * from stock where reorderstatus=2');
+
+    $('#totalProduct').text(stocks.length);
+    $('#totalObsoleteProduct').text(currentObsolete.length);
+    $('#currentReorderProduct').text(currentReorder.length);
+
+
+
+    var tbody = $('#tbody-stocks');
+    for (var i = 0; i < stocks.length; i++) {
+        var stock = stocks[i];
+
+        let bgRow = '';
+        let obsoleteIndex = currentObsolete.findIndex(function (it) {
+            return it.id === stock['id'];
+        });
+        if(obsoleteIndex !== -1)
+        {
+            bgRow = 'danger';
+        }
+        let reorderIndex = currentReorder.findIndex(function (it) {
+            return it.id === stock['id'];
+        });
+        if(reorderIndex !== -1)
+        {
+            bgRow = 'success';
+
+        }
+
+
+        var tr = $('<tr data-href="stock.html?id=' + stock.id + '" class="'+bgRow+'"></tr>');
+        tr.append('<td>' + stock.id + '</td>');
+        tr.append('<td>' + stock.code + '</td>');
+        tr.append('<td>' + stock.text + '</td>');
+        tr.append('<td>' + stock.maker + '</td>');
+        tr.append('<td>' + stock.detail + '</td>');
+        tr.append('<td style="text-align: right;">' + numberWithCommas(stock.price) + '</td>');
+        tr.append('<td style="text-align: right;font-weight: bold" >' + stock.balance + '</td>');
+        tr.append('<td>' + stock.unit + '</td>');
+        tr.appendTo(tbody);
+
+    }
+
+
+
+// click event
+    $('tbody > tr').css('cursor', 'pointer').on('click', function () {
+        window.location = $(this).attr('data-href');
+    });
+
+}
+
+
+
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
@@ -215,6 +272,18 @@ function getDatefromMS(currentDate) {
 
 
 }
+function getMSFromDate(currentDate) {
+    let arr = currentDate.split('-');
+    let d = Date.UTC(parseInt(arr[0]), parseInt(arr[1]) - 1, parseInt(arr[2]));
+
+    return d;
+
+}
+
+
+
+
+
 function onSearchClicked() {
     let q1val = $('select[name="q1"]').val();
     let q2val = $('select[name="q2"]').val();

@@ -118,6 +118,66 @@ function onClickOrderServe() {
 
         }
         else if (activeOrders[activeOrderIndex]["type"] === 'free') {
+            let arr = alasql('SELECT * from promotionfree where id=?',[activeOrders[activeOrderIndex]['tid'] ])[0];
+            let arr2 = alasql('SELECT * from promotionmaster where id=?',[ arr['pmid']])[0];
+
+
+            let originalProductOrderQuantity = arr['quantity'] * activeOrders[activeOrderIndex]['quantity'];
+            let freeProductOrderQuantity = activeOrders[activeOrderIndex]['quantity'];
+
+
+            let originalProductCurrentVal = alasql('SELECT balance from stock where id=?',[ arr['originalstockid'] ])[0]['balance'];
+            let freeProductCurrentVal = alasql('SELECT balance from stock where id=?',[arr2['obsoletestockid'] ])[0]['balance'];
+
+            if(originalProductCurrentVal < originalProductOrderQuantity || freeProductCurrentVal < freeProductOrderQuantity)
+            {
+
+                alert("Sufficient inventory for this order is not available .A reorder notification has been created for reordering later. You can see this notification at your landing page.");
+                window.location.reload(true);
+
+            }
+            else
+            {
+
+
+                alasql("UPDATE stock SET balance = ? where id=?",
+                    [ originalProductCurrentVal - originalProductOrderQuantity, arr['originalstockid'] ]);
+
+                let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+
+                alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
+                    [transId, arr['originalstockid'],
+                        today,
+                        originalProductOrderQuantity * (-1),
+                        originalProductCurrentVal - originalProductOrderQuantity,
+                        'Sold'
+                    ]);
+
+
+                alasql("UPDATE stock SET balance = ? where id=?",
+                    [ freeProductCurrentVal - freeProductOrderQuantity, arr2['obsoletestockid'] ]);
+
+                transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+
+                alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
+                    [transId, arr2['obsoletestockid'],
+                        today,
+                        freeProductOrderQuantity * (-1),
+                        freeProductCurrentVal - freeProductOrderQuantity,
+                        'Sold'
+                    ]);
+
+                alasql('UPDATE customerorder SET isbackorder = -1 where id=?', [activeOrders[activeOrderIndex]["id"]]);
+
+                alert('Order has been served.');
+                window.location.reload(true);
+
+
+            }
+
+
+
+
 
         }
         else {

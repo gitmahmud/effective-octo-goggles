@@ -273,6 +273,20 @@ function productStatusChange() {
 
         $('#tbody_product_scruniti').html(str);
 
+        $('#receiveQuantityBad,#receiveQuantityGood').unbind('keyup');
+        $('#receiveQuantityBad,#receiveQuantityGood').on('keyup',function () {
+
+            let badQty = parseInt($('#receiveQuantityBad').val());
+            let goodQty = parseInt($('#receiveQuantityGood').val());
+
+            plotPieChart('productConditionPieChart',goodQty,badQty);
+
+
+        });
+
+
+
+
         $('#modalProductScrutinize').modal('show');
 
 
@@ -403,5 +417,48 @@ function addToInvenory() {
 
     }
 
+
+}
+function plotPieChart(divId ,goodQty,badQty) {
+
+    Highcharts.chart(divId, {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'product condtion'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'Intact',
+                y: goodQty,
+                color : '#008000'
+            }, {
+                name: 'Damaged',
+                y: badQty,
+                color : '#ff0000'
+
+            }]
+        }]
+    });
 
 }

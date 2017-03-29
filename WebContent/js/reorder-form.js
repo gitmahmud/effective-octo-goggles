@@ -442,7 +442,9 @@ function supplierSelected() {
 
     alasql('INSERT INTO reorderproduct VALUES(?,?,?,?,?,?,?,?,?,?,?)',
         [rpid, stockId, supplierid, 'ORDER PLACED', orderquantity, orderplacedDate, '', expectedReceiveDate, 0, 0, 0]);
-    alasql('UPDATE stock SET reorderstatus = 2 where id = ?', [stockId]);
+    alasql('UPDATE stock SET reorderstatus=2 where id = ?', [stockId]);
+
+
 
     let supplierName = alasql('SELECT name from supplier where id=?', [supplierid])[0]['name'];
 

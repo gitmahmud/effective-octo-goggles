@@ -47,6 +47,7 @@
         <div class="panel-body">
             <table class="table table-bordered table-striped">
                 <thead>
+                <th></th>
                 <th>Name</th>
                 <th>Maker</th>
                 <th>Detail</th>
@@ -78,7 +79,7 @@
 
 
                 </thead>
-                <tbody id="tbody_new_obsolete">
+                <tbody id="tbody_new_obsolete" style="font-size: large">
                 <tr>
 
 
@@ -168,8 +169,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="button_remind_later" style="float: left" type="button" class="btn btn-default">Remind me later</button>
-                    <button id="button_obsolete_report_return_supplier" style="float: left;display: none" type="button" class="btn btn-danger">Return to Supplier</button>
+                    <button id="button_remind_later" style="float: left" type="button" class="btn btn-default"onclick="onClickRemindLater()">Remind me later</button>
+                    <button id="button_obsolete_report_return_supplier" style="float: left;display: none" type="button" class="btn btn-danger" onclick="onClickReturnToSupplier()">Return to Supplier</button>
 
                     <button id="button_mark_obsolete" style="float: right;" type="button" class="btn btn-primary text-center "
                             onclick="productMarkedAsObsolete()">Mark as obsolete
@@ -216,9 +217,13 @@
                             <td id="obsolete_count_detail"></td>
                         </tr>
                         <tr>
+                            <th>Total product</th>
+                            <td id="obsolete_count_total_expected"></td>
+                        </tr>
+
+                        <tr>
                             <th>Good Inventory</th>
-                            <td><input style="width: 120px" class="form-control " id="obsolete_count_good_qty"
-                                       type="number"></td>
+                            <td id="obsolete_count_good_qty"> </td>
                         </tr>
                         <tr>
                             <th>Damaged Inventory</th>
@@ -241,7 +246,7 @@
                 </div>
                 <div class="modal-footer">
 
-                    <button type="button" class="btn  text-center "
+                    <button type="button" class="btn  text-center btn-primary"
                             onclick="productCountDone()">Done
                     </button>
 
@@ -253,6 +258,33 @@
 
 
     </div>
+
+    <div id="modalRemindLater" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Remind Later</h4>
+                </div>
+                <div class="modal-body">
+                    <span class="form-inline" style="font-size: large">Remind me later in  <input class="input-lg form-control" type="number" style="width: 100px;" id="laterRemindDays" > days . </span>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn  text-center btn-primary"
+                            onclick="onClickRemindLaterDone()">Done
+                    </button>
+
+
+                </div>
+            </div>
+            </div>
+        </div>
+
+
 
 
 </div>
