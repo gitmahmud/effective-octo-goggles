@@ -139,6 +139,11 @@ DB.load = function () {
     alasql('DROP TABLE IF EXISTS garagesale;');
     alasql('CREATE TABLE garagesale(id INT IDENTITY, stockid INT , quantity INT , dateadded date ,done INT );');
 
+    alasql('DROP TABLE IF EXISTS customernotify;');
+    alasql('CREATE TABLE customernotify(id INT IDENTITY, notifytext STRING , hasread INT );');
+
+
+
 
 
 

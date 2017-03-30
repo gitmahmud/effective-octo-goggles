@@ -62,10 +62,15 @@ function displayFinalOrderTable(){
 
 function onTotalOrderQuantityChange() {
 
+    let safetyStock = parseInt($('#reorder_form_safety_stock').text());
 
-    if (parseInt($('#reorder_form_safety_stock').text()) > parseInt($('#totalOrderQuantity').val())) {
+    let requiredQuant = safetyStock +backorders.qty;
+    console.log(requiredQuant );
+
+    if (requiredQuant > parseInt($('#totalOrderQuantity').val())) {
 
         $('#reorder_form_safety_stock').css('background', 'red');
+        console.log('Hello');
     }
     else {
         $('#reorder_form_safety_stock').css('background', '');
@@ -436,8 +441,8 @@ function supplierSelected() {
     let rpid = alasql('SELECT MAX(id) AS max_id from reorderproduct')[0]['max_id'];
     rpid = rpid === undefined ? 100 : rpid + 1;
     let orderquantity = $('#totalOrderQuantity').val();
-    let orderplacedDate = getDatefromMS(new Date());
-    let expectedReceiveDate = getDatefromMS(new Date().setDate(new Date().getDate() + stock.leadtime));
+    let orderplacedDate = today;
+    let expectedReceiveDate = getDatefromMS(new Date(getMSFromDate(today)).setDate(new Date(getMSFromDate(today)).getDate() + stock.leadtime));
 
 
     alasql('INSERT INTO reorderproduct VALUES(?,?,?,?,?,?,?,?,?,?,?)',

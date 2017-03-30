@@ -2,6 +2,32 @@
  * Created by rahman_ma-pc on 3/14/2017.
  */
 
+var unReadNotifications = alasql('SELECT * from customernotify where hasread=0');
+var allNoticationText = '';
+for(let i = 0 ; i<unReadNotifications.length ; i++)
+{
+    allNoticationText += '<li style="color: black">'+unReadNotifications[i]['notifytext']+'</li>';
+
+}
+$('#customer_notification').append(allNoticationText);
+
+if(unReadNotifications.length >0)
+{
+    $('#customerNotificationMaster').addClass('bg-primary');
+}
+else
+{
+    $('#customerNotificationMaster').removeClass('bg-primary');
+
+}
+
+alasql('UPDATE customernotify SET hasread=1 where hasread=0');
+
+
+
+
+
+
 var allProducts = alasql('SELECT item.id AS itemId , stock.id, whouse.name, kind.text, item.code, item.maker, item.detail, item.price, stock.balance, item.unit \
 	FROM stock \
 	JOIN whouse ON whouse.id = stock.whouse \

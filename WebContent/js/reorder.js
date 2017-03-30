@@ -370,7 +370,7 @@ function addToInvenory() {
 
 
 
-    let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+    let transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
     alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
         [ transId , statusChangeProductInfo.stockid ,
             statusChangeProductInfo.orderreceiveddate ,
@@ -382,7 +382,7 @@ function addToInvenory() {
     alasql('UPDATE stock SET reorderstatus = 0 where id = ?', [statusChangeProductInfo.stockid]);
 
 
-    let rateId = alasql('SELECT max(id) AS max_id from supplierrating')[0]['max_id'];
+    let rateId = alasql('SELECT max(id)+1 AS max_id from supplierrating')[0]['max_id'];
 
     let rating = parseInt($('input[name="supplier_rate"]:checked').val());
 
@@ -408,7 +408,9 @@ function addToInvenory() {
 
     }
     else{
+
         let flag = confirm("Do you want see current inventory level for this product ?");
+
         if(flag){
             window.open('stock.html?id='+statusChangeProductInfo.stockid);
         }

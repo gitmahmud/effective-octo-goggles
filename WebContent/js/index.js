@@ -1,4 +1,4 @@
-var whouseId = parseInt($.url().param('inv'));
+var whouseId = parseInt($.url().param('inv')) || 1;
 
 if (localStorage.getItem("today") === null) {
     localStorage.setItem("today", getDatefromMS(new Date()));
@@ -70,6 +70,7 @@ var stocks = alasql(sql, ['%' + q3 + '%']);
 //reorder notification
 initiateReorderNotification();
 initiateObsoleteNotification();
+createBackorderNotification();
 displayPromotionalProduct();
 displayAllProducts();
 
@@ -83,8 +84,8 @@ function initiateReorderNotification() {
             // console.log('dafety ' + safetyStock);
             let reorderQuantity = stocks[i]["leadtime"] * stocks[i]["avgdailyusage"] + safetyStock;
 
-            // console.log('reorder ' + reorderQuantity);
-            if (currentStockValue <= reorderQuantity && stocks[i]['reorderstatus'] !== 2 ) {
+            console.log('reorder ' ,stocks[i]['id'] , reorderQuantity);
+            if (currentStockValue <= (reorderQuantity+getBackorderQuantity(stocks[i]['id'])) && stocks[i]['reorderstatus'] !== 2 ) {
                 reorderCount++;
                 // reorderLink+=stocks[i]["id"]+','
                 // console.log(currentStockValue,reorderQuantity ,stocks[i]['id'], stocks[i]['reorderstatus'],stocks[i]);
@@ -261,6 +262,136 @@ function displayAllProducts() {
         window.location = $(this).attr('data-href');
     });
 
+}
+
+function createBackorderNotification() {
+
+
+    let allBackorders = alasql("SELECT * from customerorder where  isbackorder=2");
+
+
+    console.log(allBackorders);
+
+    allBackorders.forEach(function (backorder, index) {
+
+        if(backorder['type'] === 'stock')
+        {
+            let actualVal = alasql('SELECT balance from stock where id=?',[backorder['tid']])[0]['balance'];
+            if(actualVal > backorder['quantity'])
+            {
+
+                alasql("UPDATE customerorder SET isbackorder=3 where id=?",[ backorder['id'] ]);
+
+            }
+
+
+        }
+        if(backorder['type'] === 'bundle'){
+
+            let allBundleItems = alasql('SELECT * from bundleitems where id=?',[ backorder['tid'] ]);
+            let flag = true;
+            allBundleItems.forEach(function (it, index) {
+                let requiredQuant = it['quantity']* backorder['quantity'];
+
+                let actualQuant = alasql('SELECT balance from stock where id=?',[ it['stockid']])[0]['balance'];
+
+                if(requiredQuant > actualQuant)
+                {
+                    flag = false;
+                }
+
+            });
+
+            if(flag)
+            {
+
+                alasql("UPDATE customerorder SET isbackorder=3 where id=?",[ backorder['id'] ]);
+            }
+
+
+        }
+
+        if(backorder['type'] === 'free')
+        {
+            console.log('here');
+
+            let promotionFreeDetails = alasql('SELECT * from promotionfree where id=?',[ backorder['tid']])[0];
+            let promotionMasterDetails = alasql('SELECT * from promotionmaster where id=?',[promotionFreeDetails.pmid])[0];
+
+            let actualVal1 = alasql("SELECT balance from stock where id=?",[promotionFreeDetails.originalstockid])[0]['balance'];
+            let actualVal2 = alasql("SELECT balance from stock where id=?",[promotionMasterDetails.obsoletestockid])[0]['balance'];
+
+
+            if(actualVal1 >= backorder['quantity'] && actualVal2 >= backorder['quantity'])
+            {
+
+                alasql("UPDATE customerorder SET isbackorder=3 where id=?",[ backorder['id'] ]);
+
+            }
+
+        }
+
+    });
+
+    let totalBackorders = alasql('SELECT * from customerorder where isbackorder=3').length;
+    if(totalBackorders >0)
+    {
+        $('#backorderTotal').text(totalBackorders);
+
+    }
+    else {
+        $('#backorderTotal').text('');
+    }
+
+
+
+
+}
+
+function getBackorderQuantity(stockid) {
+
+    let allBackorders = alasql("SELECT * from customerorder where  isbackorder=2");
+
+
+    //console.log(allBackorders);
+    let totalBackorderQuant = 0;
+
+    allBackorders.forEach(function (backorder, index) {
+
+        if(backorder['type'] === 'stock' && backorder['tid'] === stockid )
+        {
+            totalBackorderQuant += backorder['quantity'];
+        }
+        if(backorder['type'] === 'bundle'){
+
+            let allBundleItems = alasql('SELECT * from bundleitems where id=?',[ backorder['tid']  ]);
+            allBundleItems.forEach(function (it, index) {
+                if(it['stockid'] ===  stockid) {
+                    totalBackorderQuant += (it['quantity'] * backorder['quantity']);
+                }
+
+            });
+
+        }
+
+        if(backorder['type'] === 'free')
+        {
+            // console.log('here');
+
+            let promotionFreeDetails = alasql('SELECT * from promotionfree where id=?',[ backorder['tid']])[0];
+            let promotionMasterDetails = alasql('SELECT * from promotionmaster where id=?',[promotionFreeDetails.pmid])[0];
+
+
+            if(promotionMasterDetails.originalstockid === stockid || promotionMasterDetails.obsoletestockid)
+            {
+                totalBackorderQuant += backorder['quantity'];
+            }
+
+        }
+
+    });
+
+    return totalBackorderQuant;
 }
 
 

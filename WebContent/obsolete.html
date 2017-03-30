@@ -106,7 +106,9 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title text-primary">Product Obsolete Report</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 800px;overflow-y: auto">
+                    <div class="text-left bg-danger" style="font-size: large;font-weight: bold;display: none" id="markedObsoleteText" >
+                        <span class="glyphicon glyphicon-ok"></span> This product is marked as obsolete</div>
                     <div>
                         <div style="float: left;width: 50%">
                             <table class="table table-striped">
@@ -199,6 +201,7 @@
                 </div>
                 <div class="modal-body">
                     <h3 class="bg-info ">Enter product count for the following product</h3>
+
                     <table class="table table-striped">
                         <tr>
                             <th>Stock ID</th>

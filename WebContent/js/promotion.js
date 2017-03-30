@@ -183,3 +183,9 @@ function onPromotionCancelClicked() {
     window.location.replace('index.html?inv=1');
 }
 
+function onClickReturnToSupplier() {
+
+    window.location.replace('product-return-form.html?q1=obsolete&q2='+stockId);
+
+}
+

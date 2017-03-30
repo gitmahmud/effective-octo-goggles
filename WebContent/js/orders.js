@@ -95,7 +95,7 @@ function onClickOrderServe() {
                     alasql("UPDATE stock SET balance = ? where id=?",
                         [currentVal - totalOrderQuantity, allBundleItems[i]['stockid']]);
 
-                    let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+                    let transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
                     alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
                         [transId, allBundleItems[i]['stockid'],
                             today,
@@ -143,7 +143,7 @@ function onClickOrderServe() {
                 alasql("UPDATE stock SET balance = ? where id=?",
                     [ originalProductCurrentVal - originalProductOrderQuantity, arr['originalstockid'] ]);
 
-                let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+                let transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
 
                 alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
                     [transId, arr['originalstockid'],
@@ -157,7 +157,7 @@ function onClickOrderServe() {
                 alasql("UPDATE stock SET balance = ? where id=?",
                     [ freeProductCurrentVal - freeProductOrderQuantity, arr2['obsoletestockid'] ]);
 
-                transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+                transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
 
                 alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
                     [transId, arr2['obsoletestockid'],
@@ -187,7 +187,7 @@ function onClickOrderServe() {
                 alasql("UPDATE stock SET balance = ? where id=?",
                     [currentVal - activeOrders[activeOrderIndex]["quantity"], activeOrders[activeOrderIndex]["tid"]]);
 
-                let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+                let transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
                 alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)',
                     [transId, activeOrders[activeOrderIndex]["tid"],
                         today,

@@ -240,6 +240,7 @@ function productMarkedAsObsolete() {
     $('#obsolete_count_good_qty').text(markedObsolete.balance);
 
 
+    $('#markedObsoleteText').show();
     $('#modalObsoleteProductCount').modal('show');
 
 
@@ -309,10 +310,10 @@ function addToGarageButtonClicked(){
 
     if(damagedQty > 0 ) {
         let gId = alasql('SELECT max(id) AS max_id from garagesale')[0]['max_id'];
-        gId = gId === undefined ? 1 : gId;
+        gId = gId === undefined ? 1 : gId+1;
 
         alasql('INSERT INTO garagesale VALUES(?,?,?,?,?);',[ gId , markedObsolete.id , damagedQty , today , 0 ]);
-        let transId = alasql('SELECT max(id) AS max_id from trans')[0]['max_id'];
+        let transId = alasql('SELECT max(id)+1 AS max_id from trans')[0]['max_id'];
         alasql("INSERT INTO trans VALUES(?,?,?,?,?,?);",[ transId , markedObsolete.id , today , damagedQty , markedObsolete.balance - damagedQty , 'Added to garage sale'  ]);
 
         alasql('UPDATE stock SET balance=? where id=?',[markedObsolete.balance - damagedQty , markedObsolete.id]);

@@ -29,7 +29,6 @@
         </div>
 
 
-
         <h1 style="margin-left: 20%" class="text-primary nav navbar-nav">
             Salesperson order form
         </h1>
@@ -38,20 +37,15 @@
         <div class="collapse navbar-collapse" id="navbar-collapse">
 
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown"><a href="#" class="dropdown-toggle" style="background: limegreen"
-                                        data-toggle="dropdown"><span class="glyphicon glyphicon-globe"></span>
-                    Notification <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a onclick="window.location.reload(true);"><span
-                                class="glyphicon glyphicon-info-sign"></span> Your order #011 has been taken as
-                            back-order.</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a onclick="DB.init();"><span
-                                class="glyphicon glyphicon-repeat"></span> Init DB</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a onclick="DB.remove();"><span
-                                class="glyphicon glyphicon-trash"></span> Delete DB</a></li>
-                    </ul>
+                <li class="dropdown" id="customerNotificationMaster">
+                    <a href="#" class="dropdown-toggle"
+                       data-toggle="dropdown"><span class="glyphicon glyphicon-globe"></span>
+                        Notification <span class="caret"></span></a>
+                    <ol class="dropdown-menu" id="customer_notification">
+
+
+
+                    </ol>
                 </li>
             </ul>
         </div>
@@ -71,18 +65,14 @@
         </table>
 
 
-
-
-
-
     </div>
     <div id="regularProducts">
-    <table class="table table-bordered table-striped">
-        <tbody id="customer_tbody">
+        <table class="table table-bordered table-striped">
+            <tbody id="customer_tbody">
 
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
     </div>
 
 
