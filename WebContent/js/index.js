@@ -440,26 +440,6 @@ function onClickObsoleteNotification() {
 
 
 
-let forecastCount = alasql('SELECT count(*) AS count_all from forecast')[0]['count_all'];
-
-if(forecastCount < 2000)
-{
-    var pforecast = alasql.promise('SELECT MATRIX * FROM CSV("data/FORECASTADD-FORECASTADD.csv", {headers: true})').then(
-        function (forecasts) {
-            for (var i = 0; i < forecasts.length; i++) {
-                var forecast = forecasts[i];
-                alasql('INSERT INTO forecast VALUES(?,?,?,?,?);', forecast);
-            }
-        });
-
-    Promise.all([pforecast]).then(function () {
-        window.location.reload(true);
-    });
-
-
-}
-
-
 
 
 
