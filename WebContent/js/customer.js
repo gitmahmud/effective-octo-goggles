@@ -364,12 +364,12 @@ if(forecastCount < 2000)
         function (forecasts) {
             for (var i = 0; i < forecasts.length; i++) {
                 var forecast = forecasts[i];
-                alasql('INSERT INTO forecast VALUES(?,?,?,?,?);', forecast);
+                alasql('INSERT INTO forecast (stockid,quantity,id,times,type) VALUES(?,?,?,?,?);', forecast);
             }
         });
 
     Promise.all([pforecast]).then(function () {
-        window.location.reload(true);
+       window.location.reload(true);
     });
 
 

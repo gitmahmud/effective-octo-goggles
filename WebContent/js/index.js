@@ -88,9 +88,11 @@ function initiateReorderNotification() {
             let safetyStock = stocks[i]["maxusage"] * stocks[i]["maxleadtime"] - stocks[i]["avgdailyusage"] * stocks[i]["leadtime"];
             // console.log('dafety ' + safetyStock);
             let reorderQuantity = stocks[i]["leadtime"] * stocks[i]["avgdailyusage"] + safetyStock;
+            stocks[i]['safety_stock'] = safetyStock;
+            stocks[i]['backorder_quantity'] = getBackorderQuantity(stocks[i]['id']);
 
             console.log('reorder ' ,stocks[i]['id'] , reorderQuantity);
-            if (currentStockValue <= (reorderQuantity+getBackorderQuantity(stocks[i]['id'])) && stocks[i]['reorderstatus'] !== 2 ) {
+            if (currentStockValue <= (reorderQuantity+ stocks[i]['backorder_quantity'] ) && stocks[i]['reorderstatus'] !== 2 ) {
                 reorderCount++;
                 // reorderLink+=stocks[i]["id"]+','
                 // console.log(currentStockValue,reorderQuantity ,stocks[i]['id'], stocks[i]['reorderstatus'],stocks[i]);
@@ -218,10 +220,14 @@ function displayAllProducts() {
 
     let currentObsolete = alasql('SELECT * from stock where isobsolete>=2');
     let currentReorder = alasql('SELECT * from stock where reorderstatus=2');
+    let missingExpectedDateProducts = alasql('SELECT stockid from reorderproduct where status != "PRODUCT SCRUTINIZED"' +
+        'and status != "ORDER RECEIVED" and expectedreceivedate < ?',[ today ]);
 
     $('#totalProduct').text(stocks.length);
     $('#totalObsoleteProduct').text(currentObsolete.length);
     $('#currentReorderProduct').text(currentReorder.length);
+
+    $('#missingExpectedDateProducts').text(missingExpectedDateProducts.length);
 
 
 
@@ -246,6 +252,16 @@ function displayAllProducts() {
 
         }
 
+        let ttt = missingExpectedDateProducts.findIndex(function (it) {
+            return it.stockid === stock['id'];
+        }) ;
+
+        if(ttt !== -1)
+        {
+            bgRow = 'warning';
+        }
+
+
 
         var tr = $('<tr data-href="stock.html?id=' + stock.id + '" class="'+bgRow+'"></tr>');
         tr.append('<td>' + stock.id + '</td>');
@@ -255,6 +271,8 @@ function displayAllProducts() {
         tr.append('<td>' + stock.detail + '</td>');
         tr.append('<td style="text-align: right;">' + numberWithCommas(stock.price) + '</td>');
         tr.append('<td style="text-align: right;font-weight: bold" >' + stock.balance + '</td>');
+        tr.append('<td style="text-align: right">' + stock.safety_stock + '</td>');
+        tr.append('<td style="text-align: right">' + stock.backorder_quantity + '</td>');
         tr.append('<td>' + stock.unit + '</td>');
         tr.appendTo(tbody);
 

@@ -1,9 +1,9 @@
-ID,WHOUSEID,NAME,EMAIL
-1,1,Star & Star private limited,star@sspl.com
-2,1,Quantcast limited,quantcast@qcl.com
-3,1,Citrusbyte private limited,citrusbyte@cpl.com
-4,1,Clevertech private limited,clevertech@cltl.com
-5,1,Qubit private limited,qubit@qbp.com
-6,1,MobyMax private limited,mobymax@mmp.org
-7,1,Toptal LLC,toptal@ttlc.org
-8,1,Helloprint private limited,helloprint@hpl.com
+ID,WHOUSEID,NAME,EMAIL,ADDRESS,TEL
+1,1,Star & Star private limited,star@sspl.com,#04-74 Jurong West Street 74 Singapore,91987518
+2,1,Quantcast limited,quantcast@qcl.com,#05-74 Jurong East Street 74 Singapore,92987519
+3,1,Citrusbyte private limited,citrusbyte@cpl.com,#06-74 Buona Vista 74 Singapore,91937520
+4,1,Clevertech private limited,clevertech@cltl.com,#07-74 Pungaal 74 Singapore,91983521
+5,1,Qubit private limited,qubit@qbp.com,#04-74 One north Street 74 Singapore,91927522
+6,1,MobyMax private limited,mobymax@mmp.org,#04-74 Dover Street 74 Singapore,91917523
+7,1,Toptal LLC,toptal@ttlc.org,#04-74 Ang Mo Koo 74 Singapore,91981524
+8,1,Helloprint private limited,helloprint@hpl.com,#04-71 One north 71 Singapore,91987522

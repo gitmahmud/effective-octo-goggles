@@ -92,6 +92,18 @@
         <!-- Default panel contents -->
         <div class="panel-heading">In-progress reorder</div>
         <div class="panel-body">
+
+            <div style="margin-bottom: 2%;margin-top: 2%">
+                <label class="text-center label label-default" style="font-size: large;font-weight: bold;">Wating for supplier confirmation: <span id="wating_supplier_confirmation"></span></label>
+                <label class="text-center label label-info" style="font-size: large;font-weight: bold;margin-left: 5%"> Product receive pending: <span id="waiting_product_receive"></span></label>
+                <label class="text-center label label-warning" style="font-size: large;font-weight: bold;margin-left: 5%">Waiting for product scrutinisation: <span id="waiting_product_scruniti"></span></label>
+
+            </div>
+
+            <div class="bg-warning" style="font-weight: bold;margin-bottom: 20px;">*Click on the product name to change expected arrival date or cancel a reorder.
+            Click on the supplier name to see supplier details.</div>
+
+
             <table class="table table-bordered table-striped">
                 <thead>
                 <th>#</th>
@@ -203,7 +215,7 @@
 
     </div>
     <div id="modalOrderReport" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg" >
 
             <!-- Modal content-->
             <div class="modal-content">
@@ -211,11 +223,11 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title text-primary">Order report</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="overflow-y: auto;max-height: 800px;">
                     <table class="table table-striped">
                         <tbody>
                         <tr>
-                            <th>Order ID :#</th>
+                            <th style="width: 250px">Order ID :#</th>
                             <td id="report_order_id"></td>
 
                         </tr>
@@ -255,14 +267,22 @@
                             <th>Received quantity(Damaged) :</th>
                             <td id="report_damaged_quantity"></td>
                         </tr>
-                        <tr>
+                        <tr style="display: none">
                             <th>% Good products :</th>
                             <td id="report_percent_good"></td>
                         </tr>
-                        <tr>
+                        <tr style="display: none">
                             <th>% Damaged products :</th>
                             <td id="report_percent_damaged"></td>
                         </tr>
+                        <tr>
+                            <th>Product condition (%)</th>
+                            <td id="orderReportPieGraph" style="height: 300px;width: 500px">
+
+                            </td>
+
+                        </tr>
+
 
                         <tr>
                             <th>Supplier :</th>
@@ -306,6 +326,40 @@
 
 
     </div>
+
+    <div id="modalShowSupplierInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-primary">Supplier Information</h4>
+                </div>
+                <div class="modal-body" >
+                    <table class="table table-striped">
+                        <tbody id="supplier_info">
+
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default text-center " data-dismiss="modal">Done
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
 
 
 

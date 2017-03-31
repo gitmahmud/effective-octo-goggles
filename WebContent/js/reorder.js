@@ -14,8 +14,8 @@ var newReorders = alasql('SELECT stock.id, kind.text, item.code, item.maker, ite
 	WHERE whouse.id = 1 and stock.reorderstatus = 1');
 
 var existingReorders = alasql('SELECT reorderproduct.id , item.code , item.detail , reorderproduct.orderquantity, ' +
-    'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate , ' +
-    'reorderproduct.status  ' +
+    'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate ,reorderproduct.stockid, ' +
+    'reorderproduct.status, reorderproduct.supplierid  ' +
     'from reorderproduct join supplier ON supplier.id = reorderproduct.supplierid ' +
     'join stock ON stock.id = reorderproduct.stockid join item ON stock.item = item.id where reorderproduct.status <> ? ',
     [statusOption[3]]);
@@ -198,17 +198,22 @@ function displayNewReorders() {
 function displayExistingReorders() {
     let str = '';
 
+    let waitingSupplierConf = 0;
+    let waitingProductReceive = 0;
+    let waitingProductScruniti = 0;
+
     for (let i = 0; i < existingReorders.length; i++) {
 
         let currentProduct = existingReorders[i];
         let statusIndex = statusOption.indexOf(currentProduct.status) ;
 
+
         str += '<tr>' +
             '<td>' + currentProduct.id + '</td>' +
-            '<td>' + currentProduct.code + '</td>' +
+            '<td><a href="stock.html?id='+ currentProduct['stockid'] +'">' + currentProduct.code + '</a></td>' +
             '<td>' + currentProduct.detail + '</td>' +
             '<td>' + currentProduct.orderquantity + '</td>' +
-            '<td>' + currentProduct.supplier + '</td>' +
+            '<td><button class="btn" onclick="onClickSupplierDetails('+currentProduct['supplierid']+')"><span class="glyphicon glyphicon-info-sign"></span>' + currentProduct.supplier + '</button></td>' +
             '<td>' + currentProduct.orderplaceddate + '</td>' +
             '<td>' + currentProduct.expectedreceivedate + '</td>' +
             '<td><select class="form-control" id="select_reorder_id_' + currentProduct.id + '"> ';
@@ -216,10 +221,28 @@ function displayExistingReorders() {
 
         for (let j = statusIndex; j < statusOption.length; j++) {
 
-            str += '<option value="' + statusOption[j] + '">' + statusOption[j] + '</option>';
+            str += '<option value="' + statusOption[j] + '"'+ (j > statusIndex+1 ? ' disabled ':'') +'>' + statusOption[j] + '</option>';
 
         }
         str += '</select></td></tr>';
+
+        if(currentProduct.status === statusOption[0])
+        {
+            waitingSupplierConf++;
+        }
+        if(currentProduct.status === statusOption[1])
+        {
+            waitingProductReceive++;
+        }
+        if(currentProduct.status === statusOption[2])
+        {
+            waitingProductScruniti++;
+        }
+
+        $('#wating_supplier_confirmation').text(waitingSupplierConf);
+        $('#waiting_product_receive').text(waitingProductReceive);
+        $('#waiting_product_scruniti').text(waitingProductScruniti);
+
 
 
     }
@@ -265,6 +288,7 @@ function productStatusChange() {
             '<td>' + reorderId + '</td></tr>' +
             '<tr><th> Product name </th>' +
             '<td>' + productName + '</td></tr>' +
+            '<tr><th>Order quantity </th><td >'+statusChangeProductInfo['orderquantity']+'</td></tr>'+
             '<tr><th>Receive Quantity (Good ) : </th>' +
             '<td><input type="number" value="0" id="receiveQuantityGood"></td></tr>' +
             '<tr><th>Receive Quantity (Damaged ) : </th>' +
@@ -279,7 +303,7 @@ function productStatusChange() {
             let badQty = parseInt($('#receiveQuantityBad').val());
             let goodQty = parseInt($('#receiveQuantityGood').val());
 
-            plotPieChart('productConditionPieChart',goodQty,badQty);
+           // plotPieChart('productConditionPieChart',goodQty,badQty);
 
 
         });
@@ -337,6 +361,10 @@ function checkReceiveProduct() {
     $('#report_percent_good').text((goodQuantity * 100 / totalReceiveQuantity).toFixed(2));
     $('#report_percent_damaged').text((badQuantity * 100 / totalReceiveQuantity).toFixed(2));
     $('#report_supplier').text(reportInfo.supplier);
+    plotPieChart('orderReportPieGraph' , goodQuantity , badQuantity);
+
+
+
     alasql('UPDATE reorderproduct SET orderreceivequantity = ? , receivequantitygood =? , receivequantitydamaged =? , status = ?' +
         ' where id = ?', [totalReceiveQuantity, goodQuantity, badQuantity,  statusOption[3], reportInfo.id  ]);
 
@@ -356,6 +384,14 @@ function checkReceiveProduct() {
 
 
 function addToInvenory() {
+
+    if($('input[name="supplier_rate"]:checked').val() === undefined)
+    {
+        alert('Please provide rating for supplier.');
+        return ;
+    }
+
+
 
     statusChangeProductInfo = alasql('SELECT reorderproduct.id , item.code , item.detail , reorderproduct.orderquantity, ' +
         'supplier.name AS supplier , reorderproduct.orderplaceddate , reorderproduct.expectedreceivedate , ' +
@@ -431,7 +467,7 @@ function plotPieChart(divId ,goodQty,badQty) {
             type: 'pie'
         },
         title: {
-            text: 'product condtion'
+            text: ''
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -462,5 +498,25 @@ function plotPieChart(divId ,goodQty,badQty) {
             }]
         }]
     });
+
+}
+
+function onClickSupplierDetails(supplierid) {
+
+    let supplierInfo = alasql('SELECT * from supplier where id=?',[supplierid])[0];
+    let str = '';
+
+    str+= '<tr><th>Supplier name :</th><td>'+ supplierInfo['name']+'</td></tr>';
+    str+= '<tr><th>Address :</th><td>'+ supplierInfo['address']+'</td></tr>';
+    str+= '<tr><th>Email</th><td><span  style="font-weight: bold;font-size: large"> '+ supplierInfo['email']+'</span></td></tr>';
+    str+= '<tr><th>Telephone:</th><td><span  style="font-weight: bold;font-size: large"> '+ supplierInfo['tel']+'</span></td></tr>';
+
+    let rating = alasql('SELECT AVG(rating) AS avg_rating,last(rating) AS last_rating  from supplierrating where supplierid=? group by supplierid;', [ supplierid ])[0];
+    str+= '<tr><th>Average rating :</th><td><span  style="font-weight: bold;font-size: large"> '+ rating['avg_rating'].toFixed(2)+'</span></td></tr>';
+
+    $('#supplier_info').html(str);
+    $('#modalShowSupplierInfo').modal('show');
+
+
 
 }

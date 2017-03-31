@@ -75,7 +75,7 @@ function plotSaleComparisonChart() {
 
     });
 
-    let actualSale = alasql('SELECT * from trans where memo="Sold" and stock= ? and date >= ? and date <= ? order by date asc ',
+    let actualSale = alasql('SELECT sum(qty) AS qty ,date from trans where memo="Sold" and stock= ? and date >= ? and date <= ? group by date order by date asc ',
     [stockId , promotionMasterDetails.startdate , today]);
 
     let actualSeries = [];
