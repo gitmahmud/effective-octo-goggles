@@ -6,7 +6,8 @@ var unReadNotifications = alasql('SELECT * from customernotify where hasread=0')
 var allNoticationText = '';
 for(let i = 0 ; i<unReadNotifications.length ; i++)
 {
-    allNoticationText += '<li style="color: black">'+unReadNotifications[i]['notifytext']+'</li>';
+    allNoticationText += '<li style="color: black"><span class="glyphicon glyphicon-info-sign"></span> '+unReadNotifications[i]['notifytext']+'</li>';
+    allNoticationText +='<li role="separator" class="divider"></li>';
 
 }
 $('#customer_notification').append(allNoticationText);

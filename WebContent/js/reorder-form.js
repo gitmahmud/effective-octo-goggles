@@ -527,82 +527,84 @@ function notifyCustomer(rpid) {
             alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
 
         }
-        if(currentBackorder['type'] === 'bundle')
-        {
-            let allBundleItems = alasql("SELECT * from bundleitems where pbid = ? ", [currentBackorder['tid']]);
-            let flag = true;
-            let finalExpectedDate = reorderProductDetails['expectedreceivedate'];
 
-            for(let j = 0 ; j< allBundleItems.length ; j++){
-
-                let currentReorderStatus = alasql('SELECT reorderstatus from stock where id=?', allBundleItems[i]['stockid'])['reorderstatus'];
-                if(currentReorderStatus === 1 )
-                {
-
-                    flag = false;
-                    break;
-
-                }
-                else
-                {
-                 let currentExpectedDate =
-                     alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ allBundleItems[i]['stockid'] ])[0]['expectedreceivedate'];
-                    finalExpectedDate = finalExpectedDate > currentExpectedDate ? finalExpectedDate : currentExpectedDate;
-                }
-
-            }
-
-            if(flag)
-            {
-                let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
-                notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
-
-                let notifyText = 'Expected delivery date for your backorder ID#'+ currentBackorder['id'] +' is : '+finalExpectedDate;
-                alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
-
-            }
-
-        }
-
-        if(currentBackorder['type'] === 'free')
-        {
-            let freeProduct = alasql('SELECT * from promotionfree where id= ?',
-                [currentBackorder['tid']])[0];
-
-            let promotionMasterDetails = alasql('SELECT * from promotionmaster where id= ?',
-                [freeProduct['pmid']])[0];
-
-            let freeReorderStatus = alasql('SELECT reorderstatus from stock where id=?',[freeProduct.originalstockid] )['reorderstatus'];
-
-            let promotionReorderStatus = alasql('SELECT reorderstatus from stock where id=?',[promotionMasterDetails.obsoletestockid] )['reorderstatus'];
-
-            if(freeReorderStatus !== 1 && promotionReorderStatus !== 1)
-            {
-                let currentExpectedDate =
-                    alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ freeProduct.originalstockid ])[0]['expectedreceivedate'];
-
-                let currentExpectedDate2 =
-                    alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ promotionMasterDetails.obsoletestockid ])[0]['expectedreceivedate'];
-
-                currentExpectedDate = currentExpectedDate > currentExpectedDate2 ? currentExpectedDate : currentExpectedDate2;
-
-                let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
-                notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
-
-                let notifyText = 'Expected delivery date for your backorder ID#'+ currentBackorder['id'] +' is : '+currentExpectedDate;
-                alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
-
-
-
-            }
-
-
-
-
-
-
-        }
-
+        //
+        // if(currentBackorder['type'] === 'bundle')
+        // {
+        //     let allBundleItems = alasql("SELECT * from bundleitems where pbid = ? ", [currentBackorder['tid']]);
+        //     let flag = true;
+        //     let finalExpectedDate = reorderProductDetails['expectedreceivedate'];
+        //
+        //     for(let j = 0 ; j< allBundleItems.length ; j++){
+        //
+        //         let currentReorderStatus = alasql('SELECT reorderstatus from stock where id=?', allBundleItems[i]['stockid'])['reorderstatus'];
+        //         if(currentReorderStatus === 1 )
+        //         {
+        //
+        //             flag = false;
+        //             break;
+        //
+        //         }
+        //         else
+        //         {
+        //          let currentExpectedDate =
+        //              alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ allBundleItems[i]['stockid'] ])[0]['expectedreceivedate'];
+        //             finalExpectedDate = finalExpectedDate > currentExpectedDate ? finalExpectedDate : currentExpectedDate;
+        //         }
+        //
+        //     }
+        //
+        //     if(flag)
+        //     {
+        //         let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
+        //         notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
+        //
+        //         let notifyText = 'Expected delivery date for your backorder ID#'+ currentBackorder['id'] +' is : '+finalExpectedDate;
+        //         alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
+        //
+        //     }
+        //
+        // }
+        //
+        // if(currentBackorder['type'] === 'free')
+        // {
+        //     let freeProduct = alasql('SELECT * from promotionfree where id= ?',
+        //         [currentBackorder['tid']])[0];
+        //
+        //     let promotionMasterDetails = alasql('SELECT * from promotionmaster where id= ?',
+        //         [freeProduct['pmid']])[0];
+        //
+        //     let freeReorderStatus = alasql('SELECT reorderstatus from stock where id=?',[freeProduct.originalstockid] )['reorderstatus'];
+        //
+        //     let promotionReorderStatus = alasql('SELECT reorderstatus from stock where id=?',[promotionMasterDetails.obsoletestockid] )['reorderstatus'];
+        //
+        //     if(freeReorderStatus !== 1 && promotionReorderStatus !== 1)
+        //     {
+        //         let currentExpectedDate =
+        //             alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ freeProduct.originalstockid ])[0]['expectedreceivedate'];
+        //
+        //         let currentExpectedDate2 =
+        //             alasql('SELECT * from reorderproduct JOIN stock ON reorderproduct.stockid = stock.id where stock.reorderstatus=2 and stock.id=? and reorderproduct.status!="PRODUCT SCRUTINIZED"',[ promotionMasterDetails.obsoletestockid ])[0]['expectedreceivedate'];
+        //
+        //         currentExpectedDate = currentExpectedDate > currentExpectedDate2 ? currentExpectedDate : currentExpectedDate2;
+        //
+        //         let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
+        //         notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
+        //
+        //         let notifyText = 'Expected delivery date for your backorder ID#'+ currentBackorder['id'] +' is : '+currentExpectedDate;
+        //         alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
+        //
+        //
+        //
+        //     }
+        //
+        //
+        //
+        //
+        //
+        //
+        // }
+        //
 
 
 

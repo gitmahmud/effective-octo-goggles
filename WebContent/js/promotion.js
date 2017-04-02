@@ -63,7 +63,7 @@ function plotSaleComparisonChart() {
     let forecastData = alasql('SELECT times , quantity * ? AS forecast_quantity from forecast where stockid = ? and times >= ? and times <= ? order by times asc',
         [promotionMasterDetails.multiplier  , stockId  , promotionMasterDetails.startdate , today ]);
     let forecastSeries = [];
-    // console.log(forecastData);
+    console.log(forecastData);
 
     forecastData.forEach(function (data , index) {
         let arr = data["times"].split('-');
@@ -79,6 +79,8 @@ function plotSaleComparisonChart() {
     [stockId , promotionMasterDetails.startdate , today]);
 
     let actualSeries = [];
+
+
 
 
     actualSale.forEach(function (data,index) {
@@ -131,6 +133,10 @@ function plotSaleComparisonChart() {
 
 
     Highcharts.chart('saleComparisonChart', {
+        chart:{
+            type: 'line'
+
+        },
 
         title: {
             text: 'Forecast sale vs actual sale'
@@ -147,6 +153,15 @@ function plotSaleComparisonChart() {
             title: {
                 text: 'Quantity'
             }
+        },
+        plotOptions:{
+            line:{
+                dataLabels:{
+                    enabled : true
+                },
+                enableMouseTracking : false
+            }
+
         },
         legend: {
             layout: 'vertical',

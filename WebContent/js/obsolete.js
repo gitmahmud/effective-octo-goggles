@@ -105,7 +105,7 @@ $("button[id^='obsolete_report_']").on('click' , function () {
     $('#obsolete_report_img').attr('src','img/'+selectedObsoleteItem.id+'.jpg' );
 
 
-    plotProductTransactionHistoryChart(stockId);
+    plotProductTransactionHistoryChartByMonth(stockId);
 
     $('#modalObsoleteReport').modal('show');
 
@@ -227,6 +227,106 @@ function plotProductTransactionHistoryChart(stockId) {
     });
 
 }
+
+function plotProductTransactionHistoryChartByMonth(stockId) {
+
+    let productTransData = {};
+    let productHistorySeries = [];
+
+    let s = alasql('SELECT * from trans where stock=? ',[stockId]);
+
+    for (let i = 0; i < s.length; i++) {
+        let arr = s[i]["date"].split("-");
+
+
+        if(!productTransData.hasOwnProperty(s[i]["memo"]))
+        {
+            productTransData[s[i]["memo"]] = [];
+        }
+
+        productTransData[s[i]["memo"]].push([ s[i]["date"], Math.abs(s[i]["qty"])]);
+
+
+    }
+    console.log(productTransData);
+
+    for(let key in productTransData)
+    {
+        if(productTransData.hasOwnProperty(key))
+        {
+            let d = {};
+
+            d["name"] = key;
+
+
+            let sum_qty_jan = alasql('SELECT sum(qty) AS sum_qty from trans where memo=? and stock=? and date >= "2017-01-01" and date <"2017-02-01"',[ key , stockId ,  ])[0]['sum_qty'];
+            let sum_qty_feb = alasql('SELECT sum(qty) AS sum_qty from trans where memo=? and stock=? and date >= "2017-02-01" and date <"2017-03-01"',[ key , stockId ,  ])[0]['sum_qty'];
+            let sum_qty_mar = alasql('SELECT sum(qty) AS sum_qty from trans where memo=? and stock=? and date >= "2017-03-01" and date <"2017-04-01"',[ key , stockId ,  ])[0]['sum_qty'];
+            let sum_qty_apr = alasql('SELECT sum(qty) AS sum_qty from trans where memo=? and stock=? and date >= "2017-04-01" and date <"2017-05-01"',[ key , stockId ,  ])[0]['sum_qty'];
+
+
+            d["data"] = [Math.abs(sum_qty_jan) , Math.abs(sum_qty_feb) , Math.abs(sum_qty_mar) , Math.abs(sum_qty_apr)];
+
+
+
+            productHistorySeries.push(d);
+        }
+
+    }
+
+
+
+
+
+
+    Highcharts.chart('productTransactionHistory', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Product History'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: [
+                'January',
+                'February',
+                'March',
+                'April'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Quantity'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: productHistorySeries
+    });
+
+
+}
+
+
+
+
 function productMarkedAsObsolete() {
 
     $('#modalObsoleteReport').modal('hide');
@@ -289,7 +389,7 @@ function productCountDone() {
     $('#button_obsolete_report_return_supplier').show();
     $('#button_obsolete_report_create_promotion').show();
     $('#obsolete_report_quantity').html('<b>'+markedObsolete.balance+'</b>');
-    plotProductTransactionHistoryChart(markedObsolete.id);
+    plotProductTransactionHistoryChartByMonth(markedObsolete.id);
 
 
 

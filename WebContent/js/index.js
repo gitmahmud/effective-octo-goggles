@@ -271,8 +271,8 @@ function displayAllProducts() {
         tr.append('<td>' + stock.detail + '</td>');
         tr.append('<td style="text-align: right;">' + numberWithCommas(stock.price) + '</td>');
         tr.append('<td style="text-align: right;font-weight: bold" >' + stock.balance + '</td>');
-        tr.append('<td style="text-align: right">' + stock.safety_stock + '</td>');
-        tr.append('<td style="text-align: right">' + stock.backorder_quantity + '</td>');
+        tr.append('<td style="text-align: right">' + (stock.safety_stock === undefined? '': stock.safety_stock) + '</td>');
+        tr.append('<td style="text-align: right">' + (stock.backorder_quantity === undefined ?'' : stock.backorder_quantity) + '</td>');
         tr.append('<td>' + stock.unit + '</td>');
         tr.appendTo(tbody);
 
