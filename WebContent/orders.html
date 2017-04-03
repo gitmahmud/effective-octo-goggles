@@ -2,14 +2,13 @@
 <html>
 <head>
     <script src="lib/jquery.js"></script>
-    <link href="css/bootstrap.css" rel="stylesheet" />
-    <link href="css/bootstrap.css.map" rel="stylesheet" />
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap.css.map" rel="stylesheet"/>
     <script src="lib/bootstrap.js"></script>
     <script src="lib/alasql.js"></script>
     <script src="lib/purl.js"></script>
     <script src="lib/highcharts.js"></script>
     <script src="js/db.js"></script>
-
 
 
     <meta charset="utf-8">
@@ -36,8 +35,7 @@
         </div>
 
 
-
-        <div style="font-size: xx-large;margin-left: 50%"  >
+        <div style="font-size: xx-large;margin-left: 50%">
             <label class="label label-primary">Orders</label>
         </div>
 
@@ -48,30 +46,40 @@
 </nav>
 
 <div class="container">
+    <form class="form-inline">
+        <div class="form-group text-left" style="margin-right: 10%">
+            <label>Today : </label>
+            <input type="date" id="input_today" class="form-control">
 
-    <h2>Regular orders</h2>
-    <table class="table table-striped" style="font-size: large">
-        <thead>
-        <th>ID</th>
-        <th>Name </th>
-        <th>Type</th>
-        <th>Quantity</th>
-        <th>Order Type</th>
-        <th></th>
-
-        </thead>
-        <tbody id="tbody_orders">
-
-        </tbody>
+        </div>
+    </form>
 
 
-    </table>
+    <div class="panel panel-default" style="margin-bottom: 20px;margin-top: 20px">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Current orders</div>
+        <div class="panel-body">
+
+            <table class="table table-striped" style="font-size: large">
+                <thead>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Order Type</th>
+                <th></th>
+
+                </thead>
+                <tbody id="tbody_orders">
+
+                </tbody>
 
 
+            </table>
 
-
-
-
+        </div>
+        <div class="panel-footer"></div>
+    </div>
 
 
 </div>

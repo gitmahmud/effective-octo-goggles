@@ -80,6 +80,10 @@ function plotSaleComparisonChart() {
 
     let actualSeries = [];
 
+    if(actualSale[0]['date'] === undefined)
+    {
+        return;
+    }
 
 
 
@@ -93,7 +97,7 @@ function plotSaleComparisonChart() {
 
     });
 
-    console.log(actualSale);
+
 
 
 

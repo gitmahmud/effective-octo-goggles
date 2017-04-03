@@ -76,13 +76,13 @@ DB.load = function () {
         });
 
     alasql('DROP TABLE IF EXISTS supplier;');
-    alasql('CREATE TABLE supplier(id INT IDENTITY, whouseid INT, name STRING, email STRING, address STRING, tel STRING);');
+    alasql('CREATE TABLE supplier(id INT IDENTITY, whouseid INT, name STRING, email STRING, address STRING, tel STRING,totaldelivered INT);');
 
     var psupplier = alasql.promise('SELECT MATRIX * FROM CSV("data/SUPPLIER-SUPPLIER.csv", {headers: true})').then(
         function (suppliers) {
             for (var i = 0; i < suppliers.length; i++) {
                 var supplier = suppliers[i];
-                alasql('INSERT INTO supplier VALUES(?,?,?,?,?,?);', supplier);
+                alasql('INSERT INTO supplier VALUES(?,?,?,?,?,?,?);', supplier);
             }
         });
 

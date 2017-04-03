@@ -90,6 +90,7 @@ function initiateReorderNotification() {
             let reorderQuantity = stocks[i]["leadtime"] * stocks[i]["avgdailyusage"] + safetyStock;
             stocks[i]['safety_stock'] = safetyStock;
             stocks[i]['backorder_quantity'] = getBackorderQuantity(stocks[i]['id']);
+            stocks[i]['reorder_quantity'] = reorderQuantity;
 
             console.log('reorder ' ,stocks[i]['id'] , reorderQuantity);
             if (currentStockValue <= (reorderQuantity+ stocks[i]['backorder_quantity'] ) && stocks[i]['reorderstatus'] !== 2 ) {
@@ -273,6 +274,7 @@ function displayAllProducts() {
         tr.append('<td style="text-align: right;font-weight: bold" >' + stock.balance + '</td>');
         tr.append('<td style="text-align: right">' + (stock.safety_stock === undefined? '': stock.safety_stock) + '</td>');
         tr.append('<td style="text-align: right">' + (stock.backorder_quantity === undefined ?'' : stock.backorder_quantity) + '</td>');
+        tr.append('<td style="text-align: right;font-weight: bold">' + (stock.reorder_quantity === undefined?'':stock.reorder_quantity)  + '</td>');
         tr.append('<td>' + stock.unit + '</td>');
         tr.appendTo(tbody);
 
@@ -422,7 +424,7 @@ function getBackorderQuantity(stockid) {
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
-    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() > 9 ? '' : '0') + currentDate.getDate();
 
 
 }

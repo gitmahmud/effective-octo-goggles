@@ -176,11 +176,32 @@ function onClickCancelReorder() {
 	alasql('UPDATE stock SET reorderstatus=0 where id=?',[ id]);
 	alasql('UPDATE reorderproduct SET status=? where id=?',[ statusOption[3] , reorderInfo.id ]);
 
-    let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
-    notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
 
-    let notifyText = 'Delivery date for your product has been cancelled. You will be notified about new product arrival date . Sorry for the inconvenience.';
-    alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
+
+    let currentBackorders = getBackorder().backorderDetails;
+
+    for(let i = 0 ; i<currentBackorders.length ; i++)
+    {
+        let currentBackorder = currentBackorders[i];
+
+        if(currentBackorder['type'] === 'stock')
+        {
+
+            let notifyId = alasql('SELECT max(id)+1 AS max_id from customernotify ');
+            notifyId = notifyId.length === 0 ?1:notifyId[0]['max_id'];
+
+            let notifyText = 'Delivery date for your backorder ID #'+currentBackorder['id']+' has been cancelled temporarily. You will be notified about new product arrival date . Sorry for the inconvenience.';
+            alasql('INSERT INTO customernotify VALUES(?,?,?)',[notifyId , notifyText , 0]);
+
+        }
+
+
+
+
+    }
+
+
+
 
 
 

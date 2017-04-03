@@ -3,9 +3,27 @@
  */
 
 
+if (localStorage.getItem("today") === null) {
+    localStorage.setItem("today", getDatefromMS(new Date()));
+    $('#input_today').val(getDatefromMS(new Date()));
+}
+else {
+    let d = localStorage.getItem("today");
+    $('#input_today').val(d);
+
+}
+$('#input_today').change(function () {
+    localStorage.setItem("today", $('#input_today').val());
+
+});
+
+var today = localStorage.getItem("today");
+
+
 
 let activeOrders = alasql("SELECT * from customerorder where isbackorder = 0 or isbackorder = 1");
-let today = localStorage.getItem('today');
+
+
 
 
 for (let i = 0; i < activeOrders.length; i++) {
@@ -182,6 +200,7 @@ function onClickOrderServe() {
         }
         else {
             let currentVal = alasql("SELECT balance from stock where id = ?", [activeOrders[activeOrderIndex]["tid"]])[0]["balance"];
+            let currentCode = alasql("SELECT item.code from stock JOIN item ON stock.item = item.id where stock.id = ?", [activeOrders[activeOrderIndex]["tid"]])[0]["code"];
 
             if (activeOrders[activeOrderIndex]["quantity"] <= currentVal) {
                 alasql("UPDATE stock SET balance = ? where id=?",
@@ -198,7 +217,9 @@ function onClickOrderServe() {
 
                 alasql('UPDATE customerorder SET isbackorder = -1 where id=?', [activeOrders[activeOrderIndex]["id"]]);
 
-                let flag = confirm("Order has been served . Do you want to see current inventory level for this product ? ");
+
+
+                let flag = confirm("Order has been served .Your current inventory level  for "+ currentCode +" is "+ (currentVal - activeOrders[activeOrderIndex]["quantity"])+". Do you want to see current inventory level for this product ? ");
 
                 if (flag) {
 
@@ -231,6 +252,34 @@ function onClickOrderServe() {
 
 
 }
+
+
+
+
+function getDatefromMS(currentDate) {
+    currentDate = new Date(currentDate);
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() > 9 ? '' : '0') + currentDate.getDate();
+
+
+}
+function getMSFromDate(currentDate) {
+    let arr = currentDate.split('-');
+    let d = Date.UTC(parseInt(arr[0]), parseInt(arr[1]) - 1, parseInt(arr[2]));
+
+    return d;
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 function generateDummyData() {
     let dates = ['2017-02-07',

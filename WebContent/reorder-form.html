@@ -161,18 +161,24 @@
     <div>
         <table class="table table-bordered text-center">
             <thead>
+            <th>In stock</th>
             <th>Safety Stock</th>
             <th>Demand Quantity</th>
             <th>Backorder Quantity</th>
-            <th class="text-center col-sm-4">Total</th>
+            <th class="text-center col-sm-4">Order quantity</th>
 
             </thead>
             <tbody>
             <tr>
+                <th id="reorder_form_in_stock" class="text-center" ></th>
                 <td id="reorder_form_safety_stock"></td>
                 <td id="final_demand_quantity"></td>
                 <td id="final_backorder_quantity"></td>
-                <td><input class="form-control input-lg" type="number" id="totalOrderQuantity" style="width: 120px;margin-left:150px"></td>
+                <td><form class="form-inline"><input class="form-control input-lg" type="number" id="totalOrderQuantity" style="width: 120px;margin-left:10px;float: left;" >
+                    <label id="labelDontOrder" for="totalOrderQuantity" class="label label-success" style="display: none;float: right;font-size: medium">*Your current inventory is <br>well-stocked. You do not<br> need to reorder. </label>
+                    <label id="labelSafety" for="totalOrderQuantity" class="label label-danger" style="display: none;float: right;font-size: medium"> </label>
+                </form>
+                </td>
             </tr>
 
             </tbody>
@@ -201,22 +207,37 @@
             </div>
             <div class="modal-body">
 
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered ">
                     <thead>
                     <tr>
                         <th class="col-sm-1"><span class="glyphicon glyphicon-ok"></span></th>
-                        <th class="col-sm-2">Supplier name</th>
-                        <th class="col-sm-2">Average Rating
+                        <th class="col-sm-3">Supplier name</th>
+                        <th class="col-sm-3 text-center">Average Rating
 
-                            <div>
+                            <div class="text-center">
                                 <button class="btn btn-xs btn-info" id="id_supplier_rating_btn_asc"><span
                                         class="glyphicon glyphicon-chevron-down"></span></button>
                                 <button class="btn btn-xs btn-info" id="id_supplier_rating_btn_desc"><span
                                         class="glyphicon glyphicon-chevron-up"></span></button>
                             </div>
                         </th>
-                        <th class="col-sm-2">Last rating</th>
-                        <!--<th class="col-sm-2">Last rating date</th>-->
+                        <th class="col-sm-2 text-center">Last rating
+                            <div class="text-center">
+                                <button class="btn btn-xs btn-info" id="id_supplier_last_rating_btn_asc"><span
+                                        class="glyphicon glyphicon-chevron-down"></span></button>
+                                <button class="btn btn-xs btn-info" id="id_supplier_last_rating_btn_desc"><span
+                                        class="glyphicon glyphicon-chevron-up"></span></button>
+                            </div>
+                        </th>
+                        <th class="col-sm-2 text-center">Total order delivered
+                            <div class="text-center">
+                                <button class="btn btn-xs btn-info" id="id_supplier_total_delivered_btn_asc"><span
+                                        class="glyphicon glyphicon-chevron-down"></span></button>
+                                <button class="btn btn-xs btn-info" id="id_supplier_total_delivered_btn_desc"><span
+                                        class="glyphicon glyphicon-chevron-up"></span></button>
+                            </div>
+
+                        </th>
 
 
                     </tr>

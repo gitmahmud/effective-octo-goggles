@@ -29,6 +29,8 @@ var bundleProducts = [{
 var bundleTypeItems = [];
 var bundleTypeBoolean = false;
 
+var globalSelectionOption = '0';
+
 
 $('#new_promotion_stock_id').text(stock.id);
 $('#new_promotion_name').text(stock.code);
@@ -37,6 +39,8 @@ $('#new_promotion_detail').text(stock.detail);
 $('#new_promotion_pclass').text(stock.pclass);
 $('#discount_original_product_price').text(stock.price);
 $('#discount_product_quantity').text(stock.balance);
+$('#new_promotion_quantity').text(stock.balance);
+
 $('#promotion_selection').change(onPromotionSelection);
 
 
@@ -132,8 +136,34 @@ function onDiscountTypeChanged() {
 function onDiscountPriceInput() {
     let discountAmount = parseInt($('#discount_price_input').val());
     let discountedPrice = stock.price - discountAmount;
+
+    let productPrice = parseInt($('#discount_original_product_price').text());
+
+    if((discountedPrice/productPrice) <0.5 )
+    {
+        alert("The discount amount is more than 50% of the original product price which is unusual." +
+            " Are you sure to give this large amount as discount ? ");
+
+    }
+
+    if(discountAmount > productPrice)
+    {
+        alert('Discount amount can not be larger than product price.');
+        $('#discount_price_input').val(0);
+
+
+    }
+
+
+
+    discountAmount = parseInt($('#discount_price_input').val());
+    discountedPrice = stock.price - discountAmount;
+
+
     $('#discounted_price').text(discountedPrice);
     $('#discount_total_loss').text(discountAmount * stock.balance);
+
+
 
 
     // console.log(discountProductMultiplier, ' multiplier');
@@ -177,6 +207,7 @@ function displaySelectedBundleItems() {
     $('#tbody_bundle_items').html(str);
 
     setTotalPriceBundle();
+    onChangeDiscountAmount();
     if (bundleProducts.length > 1) {
         plotSaleForecastChart('sale_forecast_bundle', getMultiplerForBundleOffer());
     }
@@ -212,7 +243,6 @@ function displayModalChooseBundleProduct() {
         classificationSelection += '<option value="' + item.text + '">' + item.text + '</option>';
 
     });
-
     $('#bundle_product_classification_selection').html(classificationSelection);
 
 
@@ -221,6 +251,12 @@ function displayModalChooseBundleProduct() {
         if (bundleTypeBoolean === true && bundleTypeItems[0].kindtext !== item.text) {
             return;
         }
+        if(bundleTypeBoolean === false && item['selectedInBundle'] === true)
+        {
+            return ;
+        }
+
+
         str += '<tr>' +
             '<td><input name="modalBundleProductSelectionInput" type="radio" value="' + index + '"></td>' +
             '<td>' + item.code + '</td>' +
@@ -251,11 +287,21 @@ function displayModalChooseBundleProduct() {
 
     $('#modalChooseBundleProduct').modal('show');
 
+    if ($('#bundle_type_selection').val() === '0') {
+        $('#bundle_product_classification_selection').val(globalSelectionOption);
+    }
+
 }
 
 function onItemChosenBundleModal() {
 
     let selectedProductStockIndex = $('input[name="modalBundleProductSelectionInput"]:checked').val();
+    if (selectedProductStockIndex === undefined) {
+        alert('You have not selected any product. Please select a product first.');
+        return;
+
+    }
+
     let selectedProduct = regularProducts[selectedProductStockIndex];
     regularProducts[selectedProductStockIndex]["selectedInBundle"] = true;
 
@@ -383,6 +429,8 @@ function bundleProductClassificationSelectionChanged() {
                     JOIN kind ON kind.id = item.kind \
                     WHERE whouse.id = 1 and stock.isobsolete = 0');
 
+        globalSelectionOption = '0';
+
     }
     else {
         regularProducts = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
@@ -392,12 +440,28 @@ function bundleProductClassificationSelectionChanged() {
                     JOIN item ON item.id = stock.item \
                     JOIN kind ON kind.id = item.kind \
                     WHERE whouse.id = 1 and stock.isobsolete = 0 and kind.text = ?', [selectedClassification]);
+
+        globalSelectionOption = selectedClassification;
+
     }
 
     regularProducts.forEach(function (item, index) {
         item["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
             [item.id])[0]["sold_quant"]);
+
+        let selectenInBundleIndex = bundleProducts.findIndex(function (bundleProduct) {
+            return item.id === bundleProduct.stockId;
+
+        });
+        //console.log('Here');
+        if(selectenInBundleIndex !== -1) {
+            item["selectedInBundle"] = true;
+        }
+
     });
+
+
+
 
 
 }
@@ -648,7 +712,7 @@ function plotSaleForecastChart(divId, discountProductMultiplier) {
     allForecastData.splice(stopIndex + 1);
 
 
-    console.log(totalQuant, allForecastData);
+    // console.log(totalQuant, allForecastData);
 
 
     let saleForecastData = [];
@@ -671,57 +735,118 @@ function plotSaleForecastChart(divId, discountProductMultiplier) {
 
     Highcharts.chart(divId, {
         chart: {
-            type: 'column'
+            type: 'areaspline'
         },
         title: {
             text: charTitle
         },
+        legend: {
+            // layout: 'vertical',
+            // align: 'left',
+            // verticalAlign: 'bottom',
+            // x: 150,
+            // y: 100,
+            // floating: true,
+            // borderWidth: 1,
+            // backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            enabled: true
+        },
         xAxis: {
-            type: 'datetime',
-            labels: {
-                // rotation: -45,
-                style: {
-                    fontSize: '13px',
-                    fontFamily: 'Verdana, sans-serif'
-                }
-            }
+            type: 'datetime'
+            // categories: [
+            //     'Monday',
+            //     'Tuesday',
+            //     'Wednesday',
+            //     'Thursday',
+            //     'Friday',
+            //     'Saturday',
+            //     'Sunday'
+            // ],
+            // plotBands: [{ // visualize the weekend
+            //     from: 4.5,
+            //     to: 6.5,
+            //     color: 'rgba(68, 170, 213, .2)'
+            // }]
         },
         yAxis: {
-            min: 0,
             title: {
-                text: 'Forecast quantity'
+                text: 'Quantity'
             }
-        },
-        legend: {
-            enabled: false
         },
         tooltip: {
-            pointFormat: 'Forecast quantity: <b>{point.y}</b> .'
+            shared: true,
+            valueSuffix: ' units'
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            areaspline: {
+                fillOpacity: 0.5
+            }
         },
         series: [{
-            name: 'saleForecastData',
-            data: saleForecastData,
-            dataLabels: {
-                enabled: true,
-                rotation: 0,
-                color: '#FFFFFF',
-                align: 'center',
-                format: '{point.y}', // one decimal
-                y: 10, // 10 pixels down from the top
-                style: {
-                    //fontSize: '12px',
-                    fontFamily: 'Verdana, sans-serif'
-                }
-            }
-        }]
+            name: 'Sale Forecast ',
+            data: saleForecastData
+        }
+        ]
     });
+
+
+    //
+    // Highcharts.chart(divId, {
+    //     chart: {
+    //         type: 'column'
+    //     },
+    //     title: {
+    //         text: charTitle
+    //     },
+    //     xAxis: {
+    //         type: 'datetime',
+    //         labels: {
+    //             // rotation: -45,
+    //             style: {
+    //                 fontSize: '13px',
+    //                 fontFamily: 'Verdana, sans-serif'
+    //             }
+    //         }
+    //     },
+    //     yAxis: {
+    //         min: 0,
+    //         title: {
+    //             text: 'Forecast quantity'
+    //         }
+    //     },
+    //     legend: {
+    //         enabled: false
+    //     },
+    //     tooltip: {
+    //         pointFormat: 'Forecast quantity: <b>{point.y}</b> .'
+    //     },
+    //     series: [{
+    //         name: 'saleForecastData',
+    //         data: saleForecastData,
+    //         dataLabels: {
+    //             enabled: true,
+    //             rotation: 0,
+    //             color: '#FFFFFF',
+    //             align: 'center',
+    //             format: '{point.y}', // one decimal
+    //             y: 10, // 10 pixels down from the top
+    //             style: {
+    //                 //fontSize: '12px',
+    //                 fontFamily: 'Verdana, sans-serif'
+    //             }
+    //         }
+    //     }]
+    // });
 
 
 }
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
-    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() > 9 ? '' : '0') + currentDate.getDate();
 
 
 }
@@ -738,9 +863,9 @@ function fetchRegularProducts() {
     regularProducts.forEach(function (product, index) {
         product["sold_quantity"] = Math.abs(alasql('SELECT sum(qty) AS sold_quant from trans where stock = ?  and memo = "Sold"',
             [product.id])[0]["sold_quant"]);
-        console.log(product)
+        // console.log(product)
         let tt = alasql('SELECT last(date) AS last_sale from trans where  memo = "Sold"  and stock = ?', [product.id])[0]["last_sale"];
-        console.log(tt);
+        // console.log(tt);
         tt = tt === undefined ? '2017-01-01' : tt;
         tt = tt.split('-');
 
@@ -753,6 +878,11 @@ function fetchRegularProducts() {
         product["selectedInBundle"] = false;
 
     });
+
+
+
+
+
 
 
 }

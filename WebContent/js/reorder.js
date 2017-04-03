@@ -277,6 +277,11 @@ function productStatusChange() {
         str += '<span style="display: none" id="modal_product_reorder_id">' + reorderId + '</span>'
 
         $('#datepicker_modal').html(str);
+
+        $('#id_product_arrival_date').val(statusChangeProductInfo.expectedreceivedate);
+
+
+
         $('#modalSelectDate').modal('show');
 
 
@@ -290,22 +295,28 @@ function productStatusChange() {
             '<td>' + productName + '</td></tr>' +
             '<tr><th>Order quantity </th><td >'+statusChangeProductInfo['orderquantity']+'</td></tr>'+
             '<tr><th>Receive Quantity (Good ) : </th>' +
-            '<td><input type="number" value="0" id="receiveQuantityGood"></td></tr>' +
+            '<td><input type="number" class="form-control" value="0" id="receiveQuantityGood"></td></tr>' +
             '<tr><th>Receive Quantity (Damaged ) : </th>' +
-            '<td><input type="number" value="0" id="receiveQuantityBad"></td></tr>';
+            '<td><input type="number" class="form-control" value="0" id="receiveQuantityBad"></td></tr>';
 
 
         $('#tbody_product_scruniti').html(str);
 
-        $('#receiveQuantityBad,#receiveQuantityGood').unbind('keyup');
-        $('#receiveQuantityBad,#receiveQuantityGood').on('keyup',function () {
+        $('#receiveQuantityGood').val(statusChangeProductInfo.orderquantity);
+
+        $('#receiveQuantityBad').unbind('keyup');
+        $('#receiveQuantityBad').on('keyup',function () {
 
             let badQty = parseInt($('#receiveQuantityBad').val());
+            $('#receiveQuantityGood').val(statusChangeProductInfo.orderquantity - badQty);
+
+        });
+
+        $('#receiveQuantityGood').unbind('keyup');
+        $('#receiveQuantityGood').on('keyup',function () {
+
             let goodQty = parseInt($('#receiveQuantityGood').val());
-
-           // plotPieChart('productConditionPieChart',goodQty,badQty);
-
-
+            $('#receiveQuantityBad').val(statusChangeProductInfo.orderquantity - goodQty);
         });
 
 
@@ -424,6 +435,9 @@ function addToInvenory() {
 
     alasql('INSERT INTO supplierrating VALUES(?,?,?)',
         [rateId , statusChangeProductInfo.supplierid , rating ]);
+
+    let currentTotalDelivered = alasql('SELECT totaldelivered from supplier where id=?',[ statusChangeProductInfo.supplierid ])[0]['totaldelivered'];
+    alasql('UPDATE supplier SET totaldelivered= ? where id=?',[ currentTotalDelivered+1 , statusChangeProductInfo.supplierid]);
 
 
     $('#modalOrderReport').modal('hide');

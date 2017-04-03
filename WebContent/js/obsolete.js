@@ -83,34 +83,6 @@ $('#id_new_obsolete_list_price_asc').on('click',function () {
 
 });
 
-$("button[id^='obsolete_report_']").on('click' , function () {
-    let arr = $(this).attr('id').split('_');
-    let stockId = parseInt(arr[arr.length - 1]);
-    let selectedObsoleteItem = newObsoleteProducts.find(function (currentProduct) {
-        return currentProduct.id === stockId;
-    });
-    markedObsolete = selectedObsoleteItem;
-    
-
-    $('#obsolete_report_stock_id').text(selectedObsoleteItem.id);
-    $('#obsolete_report_name').text(selectedObsoleteItem.code);
-    $('#obsolete_report_maker').text(selectedObsoleteItem.maker);
-    $('#obsolete_report_detail').text(selectedObsoleteItem.detail);
-    $('#obsolete_report_period').text(selectedObsoleteItem.obsoleteperiod);
-    $('#obsolete_report_last_sold').text(selectedObsoleteItem.last_sale_date);
-    $('#obsolete_report_last_buy').text(selectedObsoleteItem.last_buy_date);
-    $('#obsolete_report_price').text(selectedObsoleteItem.price);
-    $('#obsolete_report_quantity').text(selectedObsoleteItem.balance);
-    $('#obsolete_report_pclass').text(selectedObsoleteItem.pclass);
-    $('#obsolete_report_img').attr('src','img/'+selectedObsoleteItem.id+'.jpg' );
-
-
-    plotProductTransactionHistoryChartByMonth(stockId);
-
-    $('#modalObsoleteReport').modal('show');
-
-
-});
 
 
 
@@ -137,6 +109,38 @@ function displayNewObsoleteProducts() {
     }
 
     $('#tbody_new_obsolete').html(str);
+
+
+    $("button[id^='obsolete_report_']").unbind('click');
+    $("button[id^='obsolete_report_']").on('click' , function () {
+        let arr = $(this).attr('id').split('_');
+        let stockId = parseInt(arr[arr.length - 1]);
+        let selectedObsoleteItem = newObsoleteProducts.find(function (currentProduct) {
+            return currentProduct.id === stockId;
+        });
+        markedObsolete = selectedObsoleteItem;
+
+
+        $('#obsolete_report_stock_id').text(selectedObsoleteItem.id);
+        $('#obsolete_report_name').text(selectedObsoleteItem.code);
+        $('#obsolete_report_maker').text(selectedObsoleteItem.maker);
+        $('#obsolete_report_detail').text(selectedObsoleteItem.detail);
+        $('#obsolete_report_period').text(selectedObsoleteItem.obsoleteperiod);
+        $('#obsolete_report_last_sold').text(selectedObsoleteItem.last_sale_date);
+        $('#obsolete_report_last_buy').text(selectedObsoleteItem.last_buy_date);
+        $('#obsolete_report_price').text(selectedObsoleteItem.price);
+        $('#obsolete_report_quantity').text(selectedObsoleteItem.balance);
+        $('#obsolete_report_pclass').text(selectedObsoleteItem.pclass);
+        $('#obsolete_report_img').attr('src','img/'+selectedObsoleteItem.id+'.jpg' );
+
+
+        plotProductTransactionHistoryChartByMonth(stockId);
+
+        $('#modalObsoleteReport').modal('show');
+
+
+    });
+
 
 
 
@@ -364,10 +368,16 @@ function productMarkedAsObsolete() {
             $('#add_garage_sale_button').css('display' , 'block');
             $('#add_garage_sale_button').unbind('click');
             $('#add_garage_sale_button').on('click' , addToGarageButtonClicked );
+            $('#id_button_product_count_done').attr('disabled' , true);
+            $('#id_button_product_count_done').attr('data-toggle','tooltip');
+            $('#id_button_product_count_done').attr('title','Add damaged product to garage sale first.');
         }
         else
         {
             $('#add_garage_sale_button').css('display' , 'none');
+            $('#id_button_product_count_done').attr('disabled' , false);
+            $('#id_button_product_count_done').removeAttr('data-toggle');
+            $('#id_button_product_count_done').removeAttr('title');
 
         }
 
@@ -404,6 +414,10 @@ function productCountDone() {
 
 function addToGarageButtonClicked(){
     $('#add_garage_sale_button').css('display' , 'none');
+    $('#id_button_product_count_done').attr('disabled' , false);
+    $('#id_button_product_count_done').removeAttr('data-toggle');
+    $('#id_button_product_count_done').removeAttr('title');
+
     $('#damage_garage_sale').html('<div class="bg-success"><span class="glyphicon glyphicon-ok"> ' +$('#obsolete_count_damaged_qty').val()+' damaged inventory has been added to garagesale</div>');
 
     let damagedQty = parseInt($('#obsolete_count_damaged_qty').val());
@@ -461,7 +475,7 @@ function onClickRemindLaterDone() {
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
-    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() > 9 ? '' : '0') + currentDate.getDate();
 
 
 }

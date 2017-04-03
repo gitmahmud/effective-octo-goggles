@@ -22,6 +22,7 @@ $('#reorder_form_detail').text(stock.detail);
 $('#reorder_form_quantity').text(stock.balance);
 $('#reorder_form_max_daily_usage').text(stock.maxusage);
 $('#reorder_form_lead_time').text(stock.leadtime);
+$('#reorder_form_in_stock').text(stock.balance);
 
 let safetyStock = stock.maxusage * stock.maxleadtime - stock.avgdailyusage * stock.leadtime;
 $('#reorder_form_safety_stock').text(safetyStock);
@@ -47,48 +48,79 @@ $('#startDate,#endDate').on('change', function () {
 
 
 });
-$('#totalOrderQuantity').on('keyup', onTotalOrderQuantityChange);
+$('#totalOrderQuantity').on('keyup', doReorderChecking);
 $('#totalForecastQuantity').on('change' , displayFinalOrderTable);
 
 function displayFinalOrderTable(){
     let totalSafetyStock = parseInt($('#reorder_form_safety_stock').text());
     let totalForecastQty = parseInt($('#totalForecastQuantity').val());
+
+
     $('#final_demand_quantity').text(totalForecastQty);
     $('#final_backorder_quantity').text(backorders.qty);
 
     let totalOrderQty = totalForecastQty + totalSafetyStock + backorders.qty;
 
     $('#totalOrderQuantity').val(totalOrderQty);
+    doReorderChecking();
+
 
 }
 
-function onTotalOrderQuantityChange() {
+function doReorderChecking() {
+    let totalSafetyStock = parseInt($('#reorder_form_safety_stock').text());
+    let totalForecastQty = parseInt($('#totalForecastQuantity').val());
+    let inputTotalOrderQty = parseInt($('#totalOrderQuantity').val());
 
-    let safetyStock = parseInt($('#reorder_form_safety_stock').text());
+    let summationAll = totalSafetyStock+totalForecastQty+backorders.qty;
 
-    let requiredQuant = safetyStock +backorders.qty;
-    console.log(requiredQuant );
 
-    if (requiredQuant > parseInt($('#totalOrderQuantity').val())) {
 
-        $('#reorder_form_safety_stock').css('background', 'red');
-        console.log('Hello');
-    }
-    else {
-        $('#reorder_form_safety_stock').css('background', '');
-
-    }
-
-    if(parseInt($('#totalOrderQuantity').val()) <backorders.qty)
+    if( stock.balance >=  summationAll )
     {
-        alert('You can not order less than backorder quantity');
-        $('#totalOrderQuantity').val(backorders.qty);
+        $('#labelDontOrder').show();
+        $('#totalOrderQuantity').val(0);
+        $('#labelSafety').hide();
+
+    }
+    else
+    {
+        $('#labelDontOrder').hide();
+
+        let finalStockQuantity  = (stock.balance+inputTotalOrderQty);
+
+        if( finalStockQuantity  < (backorders.qty + safetyStock))
+        {
+            $('#reorder_form_safety_stock').css('background', 'red');
+            $('#labelSafety').html('You need another '+ ((backorders.qty + safetyStock) - finalStockQuantity) +' <br>items to maintain safety stock.');
+            $('#labelSafety').show();
+
+
+        }
+        else
+        {
+            $('#reorder_form_safety_stock').css('background', '');
+            $('#labelSafety').hide();
+
+        }
+
+        if(backorders.qty > finalStockQuantity)
+        {
+            alert('You can not order less than backorder quantity');
+            $('#totalOrderQuantity').val(backorders.qty);
+
+        }
+
+
+
+
 
     }
 
 
-
 }
+
+
 
 
 
@@ -388,7 +420,7 @@ function getBackorder() {
 
 function getDatefromMS(currentDate) {
     currentDate = new Date(currentDate);
-    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() >= 9 ? '' : '0') + currentDate.getDate();
+    return currentDate.getFullYear() + '-' + (currentDate.getMonth() >= 9 ? '' : '0') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() > 9 ? '' : '0') + currentDate.getDate();
 
 
 }
@@ -409,6 +441,8 @@ function createSupplierArray() {
         let rating = alasql('SELECT AVG(rating) AS avg_rating,last(rating) AS last_rating  from supplierrating where supplierid=? group by supplierid;', [arr[i]["id"]])[0];
         rating["name"] = arr[i]["name"];
         rating["id"] = arr[i]["id"];
+        rating["totaldelivered"] = arr[i]["totaldelivered"];
+
 
 
         ret.push(rating);
@@ -433,8 +467,10 @@ function createSupplierModalData() {
         str += '<tr>' +
             '<td><input type="radio" id="select_supplier_radio_' + supplierRatingArray[i]["id"] + '" name="supplierselection" '+ (i === 0 ? 'checked' :'') +' > </td>' +
             '<td>' + supplierRatingArray[i]["name"] + '</td>' +
-            '<td>' + supplierRatingArray[i]["avg_rating"].toFixed(2) + '</td>' +
-            '<td>' + supplierRatingArray[i]["last_rating"] + '</td>' + +'</tr>'
+            '<td class="text-center">' + supplierRatingArray[i]["avg_rating"].toFixed(2) + '</td>' +
+            '<td class="text-center">' + supplierRatingArray[i]["last_rating"] + '</td>' +
+            '<td class="text-center">'+ supplierRatingArray[i]["totaldelivered"]+'</td>'+
+            '</tr>';
 
     }
     $('#tbody_choose_supplier').html(str);
@@ -507,6 +543,47 @@ $('#id_supplier_rating_btn_desc').on('click', function () {
     createSupplierModalData();
 
 });
+
+
+$('#id_supplier_last_rating_btn_asc').on('click', function () {
+    supplierRatingArray.sort(function (a, b) {
+        let cmp = a.last_rating - b.last_rating;
+        return cmp === 0 ? b.avg_rating - a.avg_rating : cmp;
+    });
+
+    createSupplierModalData();
+
+});
+$('#id_supplier_last_rating_btn_desc').on('click', function () {
+    supplierRatingArray.sort(function (a, b) {
+        let cmp = -a.last_rating + b.last_rating;
+        return cmp === 0 ? b.avg_rating - a.avg_rating : cmp;
+    });
+    createSupplierModalData();
+});
+
+
+$('#id_supplier_total_delivered_btn_asc').on('click', function () {
+    supplierRatingArray.sort(function (a, b) {
+        let cmp = a.totaldelivered - b.totaldelivered;
+        return cmp === 0 ? b.avg_rating - a.avg_rating : cmp;
+    });
+
+    createSupplierModalData();
+
+});
+$('#id_supplier_total_delivered_btn_desc').on('click', function () {
+    supplierRatingArray.sort(function (a, b) {
+        let cmp = -a.totaldelivered + b.totaldelivered;
+        return cmp === 0 ? b.avg_rating - a.avg_rating : cmp;
+    });
+    createSupplierModalData();
+});
+
+
+
+
+
 
 function notifyCustomer(rpid) {
 

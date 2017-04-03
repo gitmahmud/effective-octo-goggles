@@ -109,26 +109,28 @@
 
     <div class="panel panel-default" style="margin-bottom: 20px;margin-top: 20px">
         <!-- Default panel contents -->
-        <div class="panel-heading">All products <a href="stock-form.html" class="btn btn-sm btn-success pull-right"><span class="glyphicon glyphicon-plus"></span> New</a></div>
-                <div class="panel-body">
+        <div class="panel-heading">All products <a href="stock-form.html"
+                                                   class="btn btn-sm btn-success pull-right"><span
+                class="glyphicon glyphicon-plus"></span> New</a></div>
+        <div class="panel-body">
 
 
-                    <div id="allProductInfo" style="margin:2%">
+            <div id="allProductInfo" style="margin:2%">
                         <span class="text-center bg-primary" style="font-size: larger;font-weight: bold">Total product : <span
                                 id="totalProduct"></span></span>
-                        <span class="text-center bg-danger" style="font-size: larger;font-weight: bold;margin-left: 10%">Obsolete product : <span
-                                id="totalObsoleteProduct"></span></span>
-                        <span class="text-center bg-success" style="font-size: larger;font-weight: bold;margin-left: 10%">In progress reorder : <span
-                                id="currentReorderProduct"></span></span>
-                        <span class="text-center bg-warning" style="font-size: larger;font-weight: bold;margin-left: 10%">Missing arrival date : <span
-                                id="missingExpectedDateProducts"></span></span>
+                <span class="text-center bg-danger" style="font-size: larger;font-weight: bold;margin-left: 10%">Obsolete product : <span
+                        id="totalObsoleteProduct"></span></span>
+                <span class="text-center bg-success" style="font-size: larger;font-weight: bold;margin-left: 10%">In progress reorder : <span
+                        id="currentReorderProduct"></span></span>
+                <span class="text-center bg-warning" style="font-size: larger;font-weight: bold;margin-left: 10%">Missing arrival date : <span
+                        id="missingExpectedDateProducts"></span></span>
 
 
-                    </div>
-                    <table class="table table-hover table-bordered table-striped">
-                        <thead>
-                        <tr>
-                            <!--<th>Warehouse</th>-->
+            </div>
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <!--<th>Warehouse</th>-->
                     <th>ID</th>
                     <th>Code</th>
                     <th>Classification</th>
@@ -138,6 +140,7 @@
                     <th>In Stock</th>
                     <th>Safety stock</th>
                     <th>Backorder</th>
+                    <th>Reorder quantity</th>
                     <th>Unit</th>
                 </tr>
                 </thead>
