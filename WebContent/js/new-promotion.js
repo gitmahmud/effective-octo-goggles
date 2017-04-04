@@ -5,6 +5,8 @@ let stockId = parseInt($.url().param('id'));
 console.log(stockId);
 var today = localStorage.getItem('today');
 
+// $('#create_new_bundle_href').attr('href','new-bundle-create.html?ret='+stockId);
+
 
 var stock = alasql('SELECT stock.id, kind.text, item.code, item.maker, item.detail, item.price, \
     stock.maxusage, stock.leadtime , stock.avgdailyusage , stock.maxleadtime, stock.balance, item.pclass \
@@ -141,8 +143,7 @@ function onDiscountPriceInput() {
 
     if((discountedPrice/productPrice) <0.5 )
     {
-        alert("The discount amount is more than 50% of the original product price which is unusual." +
-            " Are you sure to give this large amount as discount ? ");
+        alert("The discount amount is more than 50% of the original product price which is unusual." );
 
     }
 
@@ -342,6 +343,7 @@ function onChangeBundleQuantity() {
 
     $('#bundle_table_product_price_' + stockId).text(selectedProduct.quantity * selectedProduct.price);
     setTotalPriceBundle();
+    onChangeDiscountAmount();
     plotSaleForecastChart('sale_forecast_bundle', getMultiplerForBundleOffer());
 
 
@@ -478,6 +480,12 @@ function setTotalPriceBundle() {
 
 function onChangeDiscountAmount() {
     let discounted_amount = parseInt($('#total_price_bundle').text()) - parseInt($('#discount_amount_bundle_input').val());
+
+    if( (parseInt($('#discount_amount_bundle_input').val()) /parseInt($('#total_price_bundle').text())) > 0.2 )
+    {
+        alert('You have given more than 20% discount on total bundle price . This amount is unusually large.');
+    }
+
     $('#discount_amount_bundle').text(discounted_amount);
     plotSaleForecastChart('sale_forecast_bundle', getMultiplerForBundleOffer());
 
@@ -519,6 +527,8 @@ function onBundleTypeChanged() {
 
 
     }
+
+    $('#discount_amount_bundle_input').val(0);
 
 
     displaySelectedBundleItems();
@@ -727,6 +737,9 @@ function plotSaleForecastChart(divId, discountProductMultiplier) {
 
     $('#discount_day_need_sale_out').text(allForecastData.length);
     $('#bundle_sale_out_day').text(allForecastData.length);
+    $('#per_day_sale_average_discount').text(Math.ceil(stock.balance / allForecastData.length));
+    $('#per_day_sale_average_bundle').text(Math.ceil(stock.balance / allForecastData.length));
+
 
 
     let charTitle = 'Sales forecast after discount applied ';

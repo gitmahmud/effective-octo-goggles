@@ -71,8 +71,6 @@
             </tr>
 
 
-
-
         </table>
 
 
@@ -135,8 +133,17 @@
                     <tr>
                         <th>Days needed to Sale out :</th>
                         <td></td>
-                        <td><label id="discount_day_need_sale_out" class="label-warning"></label></td>
+                        <td><label id="discount_day_need_sale_out" class="label-warning"
+                                   style="font-size: large"></label></td>
                     </tr>
+                    <tr>
+                        <th>Average sell per day :</th>
+                        <td></td>
+                        <th id="per_day_sale_average_discount"></th>
+
+                    </tr>
+
+
                 </table>
                 <div id="sale_forecast_discount">
 
@@ -163,16 +170,23 @@
                         <textarea rows="4" class="form-control " id="bundle_details" style="width: 75%;"></textarea>
                     </form>
 
-                    <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
-                    <select class="form-control" id="bundle_type_selection" style="width: 15%">
+                    <form class="form-inline">
+                        <label for="bundle_type_selection" class="col-sm-2">Select bundle type : </label>
+                        <select class="form-control" id="bundle_type_selection" style="width: 15%">
 
-                    </select>
+                        </select>
+                        <a class="btn btn-success" href="new-bundle-create.html" style="float: right;" target="_blank" id="create_new_bundle_href"><span
+                                class="glyphicon glyphicon-plus"></span>Create new bundle type</a>
+                        <span class="clearfix"></span>
+                    </form>
+
+
                     <div style="margin: 20px">
                         <div id="bundleOfferDesc">
 
 
                         </div>
-                        <div id="bundleOfferGuide">
+                        <div id="bundleOfferGuide" style="font-size: large;font-weight: bold">
 
                         </div>
 
@@ -218,6 +232,10 @@
                         <th colspan="4" class="text-right">Days needed to sell out</th>
                         <td id="bundle_sale_out_day"></td>
                     </tr>
+                    <tr>
+                        <th colspan="4" class="text-right">Average sell per day :</th>
+                        <td id="per_day_sale_average_bundle"></td>
+                    </tr>
 
 
                 </table>
@@ -231,48 +249,49 @@
     </div>
     <div id="promotion_free" style="display: none">
 
-                <div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
-                    <!-- Default panel contents -->
-                    <div class="panel-heading">Free offer</div>
-                    <div class="panel-body">
-                        <p class="bg-warning" style="margin-top: 20px;margin-bottom: 20px;font-size: large">
-                            Select another product for creating free product bundle.
-                            Suggestions are given based on price , sold quantity and last sold date
-                        </p>
-                        <form class=" form-group form-inline">
-                            <label for="freeProductSuggestionSelection">Get product suggestion by : </label>
-                            <select id="freeProductSuggestionSelection" class="form-control" style="width: 150px;">
-                                <option value="0">Maker</option>
-                                <option value="1">Sold Quantity</option>
-                                <option value="2">Unsold</option>
-                            </select>
-                        </form>
-                        <table class="table table-bordered">
-                            <thead>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Maker</th>
-                            <th>Price</th>
-                            <th>Days since unsold</th>
-                            <th>Total sold quantity</th>
-                            <th class="col-sm-2" data-toggle="tooltip" title="Sell trend is calculated on last months sale.">Sell Trend</th>
+        <div class="panel panel-info" style="margin-bottom: 20px;margin-top: 20px">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Free offer</div>
+            <div class="panel-body">
+                <p class="bg-warning" style="margin-top: 20px;margin-bottom: 20px;font-size: large">
+                    Select another product for creating free product bundle.
+                    Suggestions are given based on price , sold quantity and last sold date
+                </p>
+                <form class=" form-group form-inline">
+                    <label for="freeProductSuggestionSelection">Get product suggestion by : </label>
+                    <select id="freeProductSuggestionSelection" class="form-control" style="width: 150px;">
+                        <option value="0">Maker</option>
+                        <option value="1">Sold Quantity</option>
+                        <option value="2">Unsold</option>
+                    </select>
+                </form>
+                <table class="table table-bordered">
+                    <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Maker</th>
+                    <th>Price</th>
+                    <th>Days since unsold</th>
+                    <th>Total sold quantity</th>
+                    <th class="col-sm-2" data-toggle="tooltip" title="Sell trend is calculated on last months sale.">
+                        Sell Trend
+                    </th>
 
-                            </thead>
-                            <tbody id="tbody_free_product_suggestion">
-
-
-                            </tbody>
-
-
-                        </table>
-                        <form class="form-inline" style="display: none">
-                            <label>Quantity : </label>
-                            <input type="number" value="1" class="form-control" id="free_input_quantity" style="width :80px;">
-                        </form>
+                    </thead>
+                    <tbody id="tbody_free_product_suggestion">
 
 
-                    </div>
+                    </tbody>
 
+
+                </table>
+                <form class="form-inline" style="display: none">
+                    <label>Quantity : </label>
+                    <input type="number" value="1" class="form-control" id="free_input_quantity" style="width :80px;">
+                </form>
+
+
+            </div>
 
 
         </div>
@@ -280,7 +299,8 @@
 
     </div>
     <div style="margin-bottom: 50px;margin-top: 50px;margin-left: 50%">
-        <button type="button" class="btn btn-primary btn-lg" id="apply_promotion_button" onclick="onClickApplyPromotion()">
+        <button type="button" class="btn btn-primary btn-lg" id="apply_promotion_button"
+                onclick="onClickApplyPromotion()">
             Apply promotion
         </button>
     </div>

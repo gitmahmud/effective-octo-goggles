@@ -49,7 +49,7 @@ $('#startDate,#endDate').on('change', function () {
 
 });
 $('#totalOrderQuantity').on('keyup', doReorderChecking);
-$('#totalForecastQuantity').on('change' , displayFinalOrderTable);
+$('#totalForecastQuantity').on('keyup' , displayFinalOrderTable);
 
 function displayFinalOrderTable(){
     let totalSafetyStock = parseInt($('#reorder_form_safety_stock').text());
@@ -61,7 +61,15 @@ function displayFinalOrderTable(){
 
     let totalOrderQty = totalForecastQty + totalSafetyStock + backorders.qty;
 
-    $('#totalOrderQuantity').val(totalOrderQty);
+    $('#totalOrderQuantity').val(totalOrderQty -stock.balance);
+
+    totalOrderQty = parseInt($('#totalOrderQuantity').val());
+
+    $('#final_stock_quantity_order_table').text(totalOrderQty+ stock.balance);
+
+
+
+
     doReorderChecking();
 
 
@@ -76,10 +84,13 @@ function doReorderChecking() {
 
 
 
+
+
     if( stock.balance >=  summationAll )
     {
         $('#labelDontOrder').show();
         $('#totalOrderQuantity').val(0);
+        $('#final_stock_quantity_order_table').text(stock.balance);
         $('#labelSafety').hide();
 
     }
@@ -87,13 +98,30 @@ function doReorderChecking() {
     {
         $('#labelDontOrder').hide();
 
+
         let finalStockQuantity  = (stock.balance+inputTotalOrderQty);
+        if(backorders.qty > finalStockQuantity)
+        {
+            console.log(backorders.qty,finalStockQuantity)
+            alert('You can not order less than backorder quantity');
+            $('#totalOrderQuantity').val(backorders.qty - stock.balance);
+
+            finalStockQuantity = parseInt($('#totalOrderQuantity').val()) + stock.balance;
+
+
+
+
+        }
+
+
+
 
         if( finalStockQuantity  < (backorders.qty + safetyStock))
         {
             $('#reorder_form_safety_stock').css('background', 'red');
-            $('#labelSafety').html('You need another '+ ((backorders.qty + safetyStock) - finalStockQuantity) +' <br>items to maintain safety stock.');
+            $('#labelSafety').html('You need another '+ ((backorders.qty + safetyStock) - finalStockQuantity) +' <br>items to maintain <br>safety stock.');
             $('#labelSafety').show();
+
 
 
         }
@@ -104,18 +132,18 @@ function doReorderChecking() {
 
         }
 
-        if(backorders.qty > finalStockQuantity)
-        {
-            alert('You can not order less than backorder quantity');
-            $('#totalOrderQuantity').val(backorders.qty);
 
-        }
+        $('#final_stock_quantity_order_table').text(finalStockQuantity);
+
+
 
 
 
 
 
     }
+
+
 
 
 }
@@ -516,7 +544,7 @@ function supplierSelected() {
         '<tr><th>Order Date :   </th>' +
         '<td>' + orderplacedDate + '</td></tr>' +
         '<tr><th>Expected order arrival date :   </th>' +
-        '<td>' + expectedReceiveDate + '</td></tr>';
+        '<th style="font-size: large">' + expectedReceiveDate + '</th></tr>';
 
 
     $('#tbody_order_receipt').html(str);

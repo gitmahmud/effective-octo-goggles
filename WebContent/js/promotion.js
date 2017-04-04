@@ -117,6 +117,36 @@ function plotSaleComparisonChart() {
 
     };
 
+    if(promotionMasterDetails.type === 'free')
+    {
+
+        $('#sale_difference_promotion').hide();
+        $('#forecasted_sale_promotion').hide();
+
+        let remainingBalance = alasql('SELECT min(balance) AS daily_balance  ,date from trans where memo="Sold" and stock= ? and date >= ? and date <= ? group by date order by date asc ',
+            [stockId , promotionMasterDetails.startdate , today]);
+
+        let remainingBalanceSeries = [];
+
+        if(remainingBalance[0]['date'] === undefined)
+        {
+            return;
+        }
+
+
+
+        remainingBalance.forEach(function (data,index) {
+            let arr = data["date"].split('-');
+            remainingBalanceSeries.push([Date.UTC(parseInt(arr[0]) , parseInt(arr[1]) -1 , parseInt(arr[2]) ) ,
+                Math.abs(parseInt(data["daily_balance"])) ]);
+
+        });
+
+        chartSeries[0]["name"] = "Remaining balance";
+        chartSeries[0]["data"] = remainingBalanceSeries;
+
+    }
+
 
     $('#promotion_details_promotion_start').text(promotionMasterDetails.startdate);
     $('#promotion_details_total_day').text(forecastSeries.length+' day');
@@ -135,43 +165,47 @@ function plotSaleComparisonChart() {
 
     }
 
+    let chartTitle = promotionMasterDetails.type === 'free'?'Promotion sale for free product' : 'Forecast sale vs actual sale';
 
-    Highcharts.chart('saleComparisonChart', {
-        chart:{
-            type: 'line'
 
-        },
 
-        title: {
-            text: 'Forecast sale vs actual sale'
-        },
 
-        subtitle: {
-            text: ''
-        },
-        xAxis: {
-            type: 'datetime'
-        },
+        Highcharts.chart('saleComparisonChart', {
+            chart: {
+                type: 'line'
 
-        yAxis: {
+            },
+
             title: {
-                text: 'Quantity'
-            }
-        },
-        plotOptions:{
-            line:{
-                dataLabels:{
-                    enabled : true
-                },
-                enableMouseTracking : false
-            }
+                text: chartTitle
+            },
 
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle'
-        },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Quantity'
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: false
+                }
+
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
 
 //            plotOptions: {
 //                series: {
@@ -184,9 +218,15 @@ function plotSaleComparisonChart() {
 //                }
 //            },
 
-        series: chartSeries
+            series: chartSeries
 
-    });
+        });
+
+
+
+
+
+
 
 
 }

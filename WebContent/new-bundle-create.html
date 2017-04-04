@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap.css.map" rel="stylesheet"/>
+    <script src="lib/bootstrap.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="js/db.js"></script>
+
+
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html?inv=1">Inventory Management</a></li>
+            </ul>
+        </div>
+
+
+
+
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container" style="margin-left: 10%;margin-right: 10%;margin-top: 2%">
+    <h2 class="text-center">Create new bundle type</h2>
+    <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+        <label class="col-sm-2" for="bundle_name_create_new">Bundle Name : </label>
+        <input type="text" class="form-control " id="bundle_name_create_new" style="width: 75%">
+    </form>
+
+
+    <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+        <label class="col-sm-2" for="bundle_details_create_new">Bundle details : </label>
+        <textarea rows="3" class="form-control " id="bundle_details_create_new" style="width: 75%;"></textarea>
+    </form>
+    <form class="form-horizontal" style="margin-top: 10px;margin-bottom: 10px">
+        <label class="col-sm-2" for="bundle_total_product_create_new">Total product : </label>
+        <input  class="form-control" type="number" id="bundle_total_product_create_new" style="width: 100px;" value="0" >
+    </form>
+
+    <table class="table table-striped" style="width: 500px;margin-left: 190px;">
+        <thead>
+        <th style="width:50px;">#</th>
+        <th style="width: 300px;">Product type</th>
+        <th style="width: 150px;">Quantity</th>
+        </thead>
+        <tbody id="tbody_new_bundle_type">
+
+
+        </tbody>
+
+    </table>
+
+
+    <button type="button" class="btn btn-success btn-lg" style="margin-left: 35%;margin-top: 3%" onclick="onClickBundleCreate()">
+        Create new bundle </button>
+
+
+
+
+
+
+
+</div>
+<!--<div id="chart_container" style="width: 50%;margin-left: 25%"></div>-->
+<script src="js/new-bundle-create.js"></script>
+
+</body>
+</html>
