@@ -119,7 +119,8 @@ function doReorderChecking() {
         if( finalStockQuantity  < (backorders.qty + safetyStock))
         {
             $('#reorder_form_safety_stock').css('background', 'red');
-            $('#labelSafety').html('You need another '+ ((backorders.qty + safetyStock) - finalStockQuantity) +' <br>items to maintain <br>safety stock.');
+            $('#labelSafety').html('<label  class="label label-danger">*You need another '+ ((backorders.qty + safetyStock) - finalStockQuantity) +
+                ' items to<br> maintain safety stock.</label><br><button class="btn btn-sm btn-success" style="margin-top: 5px; " type="button" onclick="maintainSafetyStock('+((backorders.qty + safetyStock) - finalStockQuantity) +')">Maintain Safety stock</button>');
             $('#labelSafety').show();
 
 
@@ -150,7 +151,15 @@ function doReorderChecking() {
 
 
 
+function maintainSafetyStock(remaining_qty)
+{
+    let currentVal = parseInt($('#totalOrderQuantity').val());
+    $('#totalOrderQuantity').val(remaining_qty +currentVal);
+    doReorderChecking();
 
+
+
+}
 
 var supplierRatingArray = createSupplierArray();
 
