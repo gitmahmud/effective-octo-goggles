@@ -184,6 +184,11 @@ function displayPromotionalProduct() {
             return s.id === currentPromotion.obsoletestockid;
         });
 
+        if(stock === undefined)
+        {
+            return;
+        }
+
         if(currentPromotion.type === 'discount')
         {
             totalDiscount +=1;

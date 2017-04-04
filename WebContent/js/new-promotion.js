@@ -39,6 +39,7 @@ $('#new_promotion_name').text(stock.code);
 $('#new_promotion_maker').text(stock.maker);
 $('#new_promotion_detail').text(stock.detail);
 $('#new_promotion_pclass').text(stock.pclass);
+$('#new_promotion_price').text(stock.price);
 $('#discount_original_product_price').text(stock.price);
 $('#discount_product_quantity').text(stock.balance);
 $('#new_promotion_quantity').text(stock.balance);

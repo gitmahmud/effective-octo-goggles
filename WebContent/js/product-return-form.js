@@ -49,7 +49,9 @@ if (q1 === 'damage') {
         '<td><select class="form-control" style="width: 130px;" id="product_return_open_status">' +
         '<option>Unopened</option>' +
         '<option>Opened</option>' +
-        '</select></td>' +
+        '</select></td></tr>' +
+        '<tr><th> Supplier </th>'+
+        '<td id="product_return_supplier"></td>'+
         '</tr>';
 
     $('#tbody_prf').html(str);
@@ -72,6 +74,7 @@ if (q1 === 'damage') {
     $('#product_return_received_quantity').text(statusChangeProductInfo.orderreceivequantity);
     $('#product_return_damaged_quantity').text(statusChangeProductInfo.receivequantitydamaged);
     $('#product_return_reason').text(statusChangeProductInfo.receivequantitydamaged + ' products are found damaged in this order and hereby returned.');
+    $('#product_return_supplier').text(statusChangeProductInfo.supplier);
 
 
 }
@@ -106,7 +109,7 @@ if (q1 === 'obsolete') {
             '<td><textarea class="form-control" rows="6" id="product_return_reason"></textarea></td>' +
             '</tr>' +
             '<tr>' +
-            '<td colspan="2" class="bg-info">Select supplier and input damaged quantity count for each supplier.</td>' +
+            '<td colspan="2" class="bg-info">Please count return quantity for each suppliers.Supplier name is marked on product package.Then, select supplier and input  quantity count for each supplier.</td>' +
             '</tr>' +
             '<tr>' +
             '<td class="text-center" >' + supplierSelect + '</td>' +
