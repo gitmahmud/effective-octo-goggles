@@ -144,6 +144,10 @@ function initiateObsoleteNotification() {
                 obsoleteCount++;
                 alasql('UPDATE stock SET isobsolete=1 WHERE id=?', [stocks[i]["id"]]);
             }
+            else
+            {
+                alasql('UPDATE stock SET isobsolete=0 WHERE id=?', [stocks[i]["id"]]);
+            }
             console.log(stocks[i]['id'] ,obsoleteCount, maxLastSaleDate, lastSale , currentStockObsoletePeriod);
         }
 
